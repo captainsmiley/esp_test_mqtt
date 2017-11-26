@@ -8,8 +8,8 @@ static char ssid_st_h[] = "TeliaGateway9C-97-26-49-11-55";
 static char password_st_h[] = "179A1021DD";
 
 // Södertälje wifi
-static char ssid_st_s[] = "TP-LINK_D578";
-static char password_st_s[] = "50044801";
+static char ssid_st_s[] = "Wifi_ToV";
+static char password_st_s[] = "65635032";
 
 // hack wifi
 const char* ssid_x = "TN_24GHz_C587A5";
@@ -41,7 +41,7 @@ void WiFi_connecter::setup()
   WiFi.softAP(ssid_ap,password_ap);
   delay(1000);
 
-  WiFi.begin(ssid_x, password_x);
+  WiFi.begin(ssid_st_s, password_st_s);
   uint8_t attempt = 0;
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("Connection to STA Failed!");

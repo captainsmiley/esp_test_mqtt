@@ -3,7 +3,7 @@
 PubSubClient Mqtt_manager::client(WiFi_connecter::client);
 
 
-const char* mqtt_server = "broker.mqtt-dashboard.com";
+const char* mqtt_server = "192.168.";
 
 long lastMsg = 0;
 char msg[50];
