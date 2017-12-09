@@ -35,13 +35,14 @@ WiFi_connecter::~WiFi_connecter()
 
 void WiFi_connecter::setup()
 {
+  Serial.println("Wifi connect setup");
   WiFi.mode(WIFI_AP_STA);
   WiFi.hostname(HOSTNAME);
   WiFi.softAPConfig(local_IP, gateway, subnet);
   WiFi.softAP(ssid_ap,password_ap);
-  delay(1000);
 
   WiFi.begin(ssid_st_s, password_st_s);
+  delay(1000);
   uint8_t attempt = 0;
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("Connection to STA Failed!");
@@ -98,7 +99,6 @@ void WiFi_connecter::debugg()
   Serial.print(" IP: ");
   if (wm==WIFI_AP) Serial.print(WiFi.softAPIP());
   else Serial.print(WiFi.localIP());
-  Serial.println("");
 }
 
 
