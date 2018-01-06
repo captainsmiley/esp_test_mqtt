@@ -1,5 +1,7 @@
 #include "sysm/WiFi_connect.h"
 
+#include "conf.h"
+
 static char ssid_ap[] = SSID_AP;
 static char password_ap[] = PASS_AP;
 
@@ -41,7 +43,17 @@ void WiFi_connecter::setup()
   WiFi.softAPConfig(local_IP, gateway, subnet);
   WiFi.softAP(ssid_ap,password_ap);
 
-  WiFi.begin(ssid_st_s, password_st_s);
+  #if STA_SETUP == 0
+  WiFi.begin(MAIN_STA, MAIN_STA_PW);
+  #elif STA_SETUP == 1
+
+  WiFi.begin(S1_STA, S1_STA_PW);
+  #else
+
+  WiFi.begin(MAIN_STA, MAIN_STA_PW);
+  #endif
+
+
   delay(1000);
   uint8_t attempt = 0;
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
@@ -84,6 +96,10 @@ void WiFi_connecter::setup()
 void WiFi_connecter::update()
 {
   check_OTA();
+  if (!WiFi.isConnected())
+  {
+
+  }
 
 }
 void WiFi_connecter::check_OTA()

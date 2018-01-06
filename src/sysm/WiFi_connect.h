@@ -7,14 +7,9 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
-#define SSID_AP "ESPWiFi_tgtest"
-#define PASS_AP "connectme"
-
-#define HOSTNAME "tgtest_esp"
 
 #define WIFI_CON_UPDATE_RATE_MS 200
 
-#define STA_WIFI_ATTEMPT 1
 
 
 class WiFi_connecter
