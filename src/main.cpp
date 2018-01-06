@@ -10,12 +10,15 @@
 #include "sysm/WiFi_connect.h"
 #include "sysm/mqtt.h"
 
+#include "conf.h"
+
+
 
 #include "app/test_mqtt.h"
 
 #define TG_VERSION 8
 
-TickerScheduler ts(4);
+TickerScheduler ts(5);
 
 
 WiFi_connecter wc;
@@ -23,15 +26,18 @@ void wifi_con_update()
 {
   wc.update();
 }
+#if MQTT_ENABLED
 Mqtt_manager mqttm;
 void mqtt_update()
 {
   mqttm.update();
 }
-Test_mqtt test(mqttm);
-void test_update()
+#endif
+#include "com/tgesp.h"
+tgesp com;
+void com_update()
 {
-  test.update();
+  com.update();
 }
 
 
@@ -60,12 +66,16 @@ void setup()
   Serial.begin(115200);
   Serial.println("Start of main");
   wc.setup();
+  #if MQTT_ENABLED
   mqttm.setup();
-  test.setup();
+  #endif
+  com.setup();
   ts.add(0, wc.update_rate,wifi_con_update);
-  ts.add(1,test.update_rate,test_update);
+  #if MQTT_ENABLED
   ts.add(2,mqttm.update_rate,mqtt_update);
-  ts.add(3,1000,print_info);
+  #endif
+  ts.add(3,com.update_rate,com_update);
+  ts.add(4,1000,print_info);
 }
 
 

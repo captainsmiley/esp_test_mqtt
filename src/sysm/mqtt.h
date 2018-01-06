@@ -16,6 +16,7 @@ public:
   const static uint8_t update_rate = MQTT_UPDATE_RATE_MS;
   typedef void (*f_ptr_callback) (const char*, byte*, unsigned int);
   void add_sub_topic(const char* topic, f_ptr_callback c);
+  void add_sub_topic(const char* topic, byte * data);
   static PubSubClient client;
 
 
