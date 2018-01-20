@@ -42,7 +42,10 @@ void tgesp::listen_for_clients()
 {
     WiFiClient client = server.available();
     if (client) {
+<<<<<<< HEAD
       Serial.println("client_connected");
+=======
+>>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
         client_connected = true;
         connected_client = client;
         read_client(client);

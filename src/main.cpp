@@ -8,9 +8,17 @@
 #include "sysm/WiFi_connect.h"
 #if MQTT_ENABLED
 #include "sysm/mqtt.h"
+<<<<<<< HEAD
 #endif
 #include "sig/signals.h"
 #include "sysm/OTA.h"
+=======
+
+#include "conf.h"
+
+
+
+>>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
 #include "app/test_mqtt.h"
 #if COMMANDS_ENABLED
 #include "com/tgesp.h"
@@ -19,16 +27,26 @@ TickerScheduler ts(5);
 
 Signals sig;
 
+<<<<<<< HEAD
 WiFi_connecter wc(sig);
+=======
+TickerScheduler ts(5);
+
+
+WiFi_connecter wc;
+>>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
 void wifi_con_update()
 {
   wc.update();
 }
+<<<<<<< HEAD
 OTA ota;
 void ota_update()
 {
   ota.update();
 }
+=======
+>>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
 #if MQTT_ENABLED
 Mqtt_manager mqttm;
 void mqtt_update()
@@ -36,10 +54,15 @@ void mqtt_update()
   mqttm.update();
 }
 #endif
+<<<<<<< HEAD
 
 #if COMMANDS_ENABLED
 tgesp com;
 
+=======
+#include "com/tgesp.h"
+tgesp com;
+>>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
 void com_update()
 {
   com.update();
@@ -80,6 +103,7 @@ void setup()
 
   // Setup components
   wc.setup();
+<<<<<<< HEAD
   ota.setup();
   #if MQTT_ENABLED
   mqttm.setup();
@@ -97,6 +121,18 @@ void setup()
 
 
 
+=======
+  #if MQTT_ENABLED
+  mqttm.setup();
+  #endif
+  com.setup();
+  ts.add(0, wc.update_rate,wifi_con_update);
+  #if MQTT_ENABLED
+  ts.add(2,mqttm.update_rate,mqtt_update);
+  #endif
+  ts.add(3,com.update_rate,com_update);
+  ts.add(4,1000,print_info);
+>>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
 }
 
 
