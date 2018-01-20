@@ -2,7 +2,6 @@
 
 
 /***** WiFi settings **************/
-<<<<<<< HEAD
 #define DEF_STA        "Wifi_ToV"
 #define DEF_STA_PW     "65635032"
 
@@ -27,18 +26,6 @@
 
 
 #define SSID_AP         "ESPWiFi_tg"
-=======
-#define MAIN_STA        "Wifi_ToV"
-#define MAIN_STA_PW     "65635032"
-#define S1_STA "ESPWiFi_TrainController"
-#define S1_STA_PW "connectme"
-
-#define STA_SETUP 0
-
-
-
-#define SSID_AP         "ESPWiFi_tgtest"
->>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
 #define PASS_AP         "connectme"
 
 #define HOSTNAME        "tgtest_esp"
@@ -46,7 +33,6 @@
 #define STA_WIFI_ATTEMPT 1
 
 
-<<<<<<< HEAD
 /***** Enable components settings ***********/
 #define MQTT_ENABLED 0
 #define COMMANDS_ENABLED 1
@@ -70,7 +56,3 @@
 #define MAIN_STA        "Wifi_ToV"
 #define MAIN_STA_PW     "65635032"
 #endif
-=======
-/***** MQTT settings ***********/
-#define MQTT_ENABLED 0
->>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
