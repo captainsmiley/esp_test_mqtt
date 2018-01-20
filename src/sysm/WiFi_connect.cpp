@@ -26,7 +26,7 @@ IPAddress subnet(255,255,255,0);
 // Initialize the client library
 WiFiClient WiFi_connecter::client = WiFiClient();
 
-WiFi_connecter::WiFi_connecter()
+WiFi_connecter::WiFi_connecter(Signals s) : sig(s)
 {
 
 }
@@ -35,23 +35,95 @@ WiFi_connecter::~WiFi_connecter()
 
 }
 
-void WiFi_connecter::setup()
+void scanDone(int n)
 {
-  Serial.println("Wifi connect setup");
+
+}
+
+void WiFi_connecter::find_sta_and_connect()
+{
   WiFi.mode(WIFI_AP_STA);
-  WiFi.hostname(HOSTNAME);
-  WiFi.softAPConfig(local_IP, gateway, subnet);
-  WiFi.softAP(ssid_ap,password_ap);
+  Serial.println("find sta and connect");
+  int n = WiFi.scanComplete();
+  Serial.println(n);
+  if (n == -2)
+  {
+    Serial.println("start scan");
+  WiFi.scanNetworks(true);
+  }
+  if(n)
+  {
+    Serial.println("Scan Complete");
+    for (int i = 0; i < n; i++)
+    {
+      if(WiFi.SSID(i)==String(MAIN_STA))
+      {
+        WiFi.begin(WiFi.SSID(i).c_str(), MAIN_STA_PW);
+        if(WiFi.waitForConnectResult() == WL_CONNECTED)
+        {
+          return;
+        }
 
-  #if STA_SETUP == 0
+      }
+      if(WiFi.SSID(i).length() > 10)
+      {
+        if(WiFi.SSID(i).substring(0,10) == String("ESPWiFi_tg"))
+        {
+          WiFi.begin(WiFi.SSID(i).c_str(), "connectme");
+          if(WiFi.waitForConnectResult() == WL_CONNECTED)
+          {
+            return;
+          }
+        }
+      }
+
+      WiFi.scanNetworks(true);
+
+    }
+  }
+
+  if(n==-1)
+  {
+    Serial.println("Scan in prog");
+
+  }
+
+}
+
+void WiFi_connecter::check_wifi_connections()
+{
+
+  switch (WiFi.getMode()) {
+    case WIFI_AP_STA:
+      if(!WiFi.isConnected() && sta_con_main())
+      {
+        find_sta_and_connect();
+
+        //Serial.println("Wifi main STA disconnected");
+
+      }
+      else
+      {
+      }
+      break;
+      case WIFI_AP:
+      find_sta_and_connect();
+
+      break;
+      default:
+      Serial.println("err: unknown wifi mode");
+      break;
+  }
+}
+
+bool WiFi_connecter::sta_con_main()
+{
+  return WiFi.SSID()==String(MAIN_STA);
+}
+
+void WiFi_connecter::connect_to_main_sta()
+{
   WiFi.begin(MAIN_STA, MAIN_STA_PW);
-  #elif STA_SETUP == 1
-
-  WiFi.begin(S1_STA, S1_STA_PW);
-  #else
-
-  WiFi.begin(MAIN_STA, MAIN_STA_PW);
-  #endif
 
 
   delay(1000);
@@ -63,43 +135,31 @@ void WiFi_connecter::setup()
     if (attempt >= STA_WIFI_ATTEMPT)
     {
       WiFi.mode(WIFI_AP);
-      break;
+      return;
     }
   }
+  WiFi.setAutoReconnect(true);
 
-  ArduinoOTA.onStart([]() {
-    String type;
-    if (ArduinoOTA.getCommand() == U_FLASH)
-      type = "sketch";
-    else // U_SPIFFS
-      type = "filesystem";
-    // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-    Serial.println("Start updating " + type);
-  });
-  ArduinoOTA.onEnd([]() {
-    Serial.println("\nEnd");
-  });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-  });
-  ArduinoOTA.onError([](ota_error_t error) {
-    Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-    else if (error == OTA_END_ERROR) Serial.println("End Failed");
-  });
-  ArduinoOTA.begin();
+}
+void WiFi_connecter::setup()
+{
+  Serial.println("Wifi connect setup");
+  WiFi.mode(WIFI_AP_STA);
+  //WiFi.hostname(HOSTNAME);
+  WiFi.softAPConfig(local_IP, gateway, subnet);
+  String ssid_string = String(ssid_ap)+String(sig.get_id());
+  WiFi.softAP(ssid_string.c_str(),password_ap);
+  //connect_to_main_sta();
+  find_sta_and_connect();
+
+
+
+
 }
 
 void WiFi_connecter::update()
 {
-  check_OTA();
-  if (!WiFi.isConnected())
-  {
-
-  }
+  check_wifi_connections();
 
 }
 void WiFi_connecter::check_OTA()
