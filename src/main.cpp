@@ -6,15 +6,18 @@
 #include "conf.h"
 
 #include "sysm/WiFi_connect.h"
-#if MQTT_ENABLED
-#include "sysm/mqtt.h"
-#endif
 #include "sig/signals.h"
 #include "sysm/OTA.h"
 #include "app/test_mqtt.h"
+
 #if COMMANDS_ENABLED
 #include "com/tgesp.h"
 #endif
+#if MQTT_ENABLED
+#include "sysm/mqtt.h"
+#endif
+
+
 TickerScheduler ts(5);
 
 Signals sig;
@@ -103,5 +106,4 @@ void setup()
 void loop()
 {
   ts.update();
-
 }
