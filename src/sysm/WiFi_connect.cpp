@@ -126,6 +126,20 @@ void WiFi_connecter::connect_to_main_sta()
   WiFi.begin(MAIN_STA, MAIN_STA_PW);
 
 
+<<<<<<< HEAD
+=======
+  #if STA_SETUP == 0
+  WiFi.begin(MAIN_STA, MAIN_STA_PW);
+  #elif STA_SETUP == 1
+
+  WiFi.begin(S1_STA, S1_STA_PW);
+  #else
+
+  WiFi.begin(MAIN_STA, MAIN_STA_PW);
+  #endif
+
+
+>>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
   delay(1000);
   uint8_t attempt = 0;
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
@@ -159,7 +173,15 @@ void WiFi_connecter::setup()
 
 void WiFi_connecter::update()
 {
+<<<<<<< HEAD
   check_wifi_connections();
+=======
+  check_OTA();
+  if (!WiFi.isConnected())
+  {
+
+  }
+>>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
 
 }
 void WiFi_connecter::check_OTA()

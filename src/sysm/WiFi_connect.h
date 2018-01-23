@@ -8,9 +8,15 @@
 #include <ArduinoOTA.h>
 #include "sig/signals.h"
 
+<<<<<<< HEAD
 
 #define WIFI_CON_UPDATE_RATE_MS 5000
 
+=======
+
+#define WIFI_CON_UPDATE_RATE_MS 200
+
+>>>>>>> a59ad040a7ac9928047695adf6d3be11a5556031
 
 
 class WiFi_connecter
