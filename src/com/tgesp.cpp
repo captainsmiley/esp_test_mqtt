@@ -32,6 +32,11 @@ void tgesp::update()
   listen_for_clients();
 }
 
+void tgesp::debugg()
+{
+  Serial.print("id: ");Serial.print(cmds.get_id());
+}
+
 void tgesp::stop()
 {
 	server.stop();

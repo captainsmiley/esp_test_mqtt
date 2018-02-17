@@ -60,6 +60,7 @@ void print_info()
 {
   Serial.print("T:");Serial.print(t_g++);Serial.print(" V:");Serial.print(TG_VERSION);
   Serial.print("| ");wc.debugg();
+  Serial.print("| ");com.debugg();
   Serial.print("| Free flash:");Serial.print(ESP.getFreeSketchSpace());
   Serial.print(" Free heap:");Serial.print(ESP.getFreeHeap());
 

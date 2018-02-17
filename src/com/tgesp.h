@@ -23,6 +23,7 @@ public:
 	void scanWifi();
 	void setup();
 	void update();
+	void debugg();
 	void stop();
 	void createAP();
 	void connectToWifi();

@@ -187,17 +187,67 @@ void Commands::controll(const char *p)
     String p_s(p);
     uint16_t n = p_s.toInt();
     Serial.print("Get ctr: ");Serial.println(n);
+    send_info_to_clients(p);
+    //Serial.println(get_id());
+    //uint16_t sh = get_id();
+    //Serial.println(sh);
 
-    if ( n & (1 << get_id()) )
+    if ( n & (0x01 << get_id() ) )
     {
-      Serial.print("this one");
+      Serial.println("servo_h");
       servo_h();
     } else
     {
+      Serial.println("servo_l");
       servo_l();
     }
 }
+
+extern "C" {
+#include<user_interface.h>
+}
+
+void Commands::send_info_to_clients(const char *p)
+{
+  struct station_info *stat_info;
+  struct ip_addr *IPaddress;
+  IPAddress address;
+  // Initialize the client library
+  WiFiClient client;
+
+  Serial.println("Starting to send info to clinets");
+  stat_info = wifi_softap_get_station_info();
+  while (stat_info != NULL)
+  {
+    IPaddress = &stat_info->ip;
+    address = IPaddress->addr;
+
+    
+    client.setNoDelay(true);
+    client.setTimeout(110);
+    Serial.print("Send to: ");Serial.println(address);
+    if (client.connect(address, 80)) {
+
+      Serial.print("connected to ");Serial.println(address);
+      // Make a HTTP request:
+      client.println("GET /controll?"+String(p)+" HTTP/1.0");
+      client.println();
+      client.flush();
+    }
+    else
+    {
+      Serial.print("Faild to send info to ");Serial.println(address);
+  //    baned_clients[banned_count] = address;
+   //   banned_count++;
+    //  if (banned_count >= 10) banned_count = 0;
+    }
+    client.stop();
+    stat_info = STAILQ_NEXT(stat_info, next);
+  }
+
+}
+
 uint8_t Commands::get_id()
 {
-  EEPROM.read(ID_ADDR);
+  return EEPROM.read(ID_ADDR);
 }

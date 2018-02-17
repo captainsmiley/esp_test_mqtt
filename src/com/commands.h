@@ -38,6 +38,7 @@ public:
     void connect(const char *p);
     void set_id(const char *p);
     void controll(const char *p);
+    void send_info_to_clients(const char *p);
     uint8_t get_id();
 	virtual ~Commands();
 

@@ -19,7 +19,7 @@ const char* password_x = "68E84C8ED7";
 
 
 IPAddress local_IP(192,168,4,22);
-IPAddress gateway(192,168,4,9);
+IPAddress gateway(192,168,4,22);
 IPAddress subnet(255,255,255,0);
 
 
@@ -42,52 +42,81 @@ void scanDone(int n)
 
 void WiFi_connecter::find_sta_and_connect()
 {
-  WiFi.mode(WIFI_AP_STA);
-  Serial.println("find sta and connect");
-  int n = WiFi.scanComplete();
-  Serial.println(n);
-  if (n == -2)
+  static uint8_t state = 0;
+  int n = -100;
+  Serial.print("find sta and connect state: ");Serial.println(state);
+  switch (state)
   {
+    case 0:
+    WiFi.mode(WIFI_AP_STA);
+    //WiFi.setAutoReconnect(false);
+    WiFi.scanNetworks(true);
     Serial.println("start scan");
-  WiFi.scanNetworks(true);
-  }
-  if(n)
-  {
-    Serial.println("Scan Complete");
-    for (int i = 0; i < n; i++)
+    state = 1;
+    break;
+    case 1:
+    n = WiFi.scanComplete();
+    Serial.println(n);
+    if (n == -2)
     {
-      if(WiFi.SSID(i)==String(MAIN_STA))
-      {
-        WiFi.begin(WiFi.SSID(i).c_str(), MAIN_STA_PW);
-        if(WiFi.waitForConnectResult() == WL_CONNECTED)
-        {
-          return;
-        }
+      Serial.println("Still scanning");
+      break;
+    }
+    if(n==-1)
+    {
+      Serial.println("Scan in prog");
+    }
+    if (n)
+    {
+      Serial.println("scan complete");
 
-      }
-      if(WiFi.SSID(i).length() > 10)
+      for (int i = 0; i < n; i++)
       {
-        if(WiFi.SSID(i).substring(0,10) == String("ESPWiFi_tg"))
+        Serial.println(WiFi.SSID(i));
+        if(WiFi.SSID(i)==String(MAIN_STA))
         {
-          WiFi.begin(WiFi.SSID(i).c_str(), "connectme");
+          WiFi.begin(WiFi.SSID(i).c_str(), MAIN_STA_PW);
           if(WiFi.waitForConnectResult() == WL_CONNECTED)
           {
-            return;
+            Serial.print("Connected to: ");Serial.println(WiFi.SSID(i));
+            state = 2;
+            break;
           }
         }
       }
 
-      WiFi.scanNetworks(true);
 
+      if(!WiFi.isConnected())
+      {
+        for (int i = 0; i < n; i++)
+        {
+          if(WiFi.SSID(i).length() > 10)
+          {
+            if(WiFi.SSID(i).substring(0,10) == String("ESPWiFi_tg"))
+            {
+              WiFi.begin(WiFi.SSID(i).c_str(), "connectme");
+              if(WiFi.waitForConnectResult() == WL_CONNECTED)
+              {
+                Serial.print("Connected to: ");Serial.println(WiFi.SSID(i));
+                state = 2;
+                break;
+              }
+            }
+          }
+        }
+      }
+      state = 2;
     }
+    break;
+
+    case 2:
+    Serial.println("prep new scan");
+    state = 0;
+    break;
+    default:
+    Serial.println("Uknown state err");
+    break;
   }
-
-  if(n==-1)
-  {
-    Serial.println("Scan in prog");
-
-  }
-
 }
 
 void WiFi_connecter::check_wifi_connections()
@@ -95,24 +124,24 @@ void WiFi_connecter::check_wifi_connections()
 
   switch (WiFi.getMode()) {
     case WIFI_AP_STA:
-      if(!WiFi.isConnected() && sta_con_main())
-      {
-        find_sta_and_connect();
-
-        //Serial.println("Wifi main STA disconnected");
-
-      }
-      else
-      {
-      }
-      break;
-      case WIFI_AP:
+    if(!WiFi.isConnected() || !sta_con_main())
+    {
       find_sta_and_connect();
 
-      break;
-      default:
-      Serial.println("err: unknown wifi mode");
-      break;
+      //Serial.println("Wifi main STA disconnected");
+
+    }
+    else
+    {
+    }
+    break;
+    case WIFI_AP:
+    find_sta_and_connect();
+
+    break;
+    default:
+    Serial.println("err: unknown wifi mode");
+    break;
   }
 }
 
@@ -150,6 +179,7 @@ void WiFi_connecter::setup()
   String ssid_string = String(ssid_ap)+String(sig.get_id());
   WiFi.softAP(ssid_string.c_str(),password_ap);
   //connect_to_main_sta();
+
   find_sta_and_connect();
 
 
@@ -159,6 +189,7 @@ void WiFi_connecter::setup()
 
 void WiFi_connecter::update()
 {
+  Serial.println("WiFi update");
   check_wifi_connections();
 
 }
@@ -179,7 +210,7 @@ void WiFi_connecter::debugg()
 
 
 extern "C" {
-#include<user_interface.h>
+  #include<user_interface.h>
 }
 struct station_info *stat_info;
 struct ip_addr *IPaddress;
