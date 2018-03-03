@@ -7,15 +7,9 @@
 
 
 
-<<<<<<< HEAD
 Commands::Commands(tgesp* e,Signals & s) :
     servo_h_pos(s.get_servo_h_pos()),
     servo_l_pos(s.get_servo_l_pos()),
-=======
-Commands::Commands(tgesp* e) :
-    servo_h_pos(SERVO_H_POS),
-    servo_l_pos(SERVO_L_POS),
->>>>>>> origin/master
 	client_ip(192,168,0,105),
   sig(s),
 	esp(e)
@@ -184,7 +178,7 @@ void Commands::controll(const char *p)
     String p_s(p);
     uint16_t n = p_s.toInt();
     Serial.print("Get ctr: ");Serial.println(n);
-    send_info_to_clients(p);
+    //send_info_to_clients(p);
     //Serial.println(get_id());
     //uint16_t sh = get_id();
     //Serial.println(sh);
@@ -198,6 +192,8 @@ void Commands::controll(const char *p)
       Serial.println("servo_l");
       servo_l();
     }
+
+    sig.set_msg(p_s);
 }
 
 extern "C" {

@@ -50,7 +50,7 @@ void com_update()
 #endif
 
 #include "app/msg_sender.h"
-MsgSender msg_s(&(com.cmds));
+MsgSender msg_s(&(com.cmds),sig);
 void msg_sender_update()
 {
   msg_s.update();

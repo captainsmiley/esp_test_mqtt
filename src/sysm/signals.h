@@ -4,14 +4,10 @@
 #include <EEPROM.h>
 #define SIGNALS_UPDATE_RATE_MS 100
 
-<<<<<<< HEAD:src/sysm/signals.h
 #define SERVO_H_POS_ADDR 0x00
 #define SERVO_L_POS_ADDR 0x01
 #define SERVO_DELAY_ADDR 0x02
 #define ID_ADDR 0x04
-=======
-
->>>>>>> origin/master:src/sig/signals.h
 
 class Signals
 {
@@ -23,8 +19,6 @@ public:
 
   void set_id(uint8_t);
   uint8_t get_id() const;
-  void set_servo_delay(uint8_t);
-  uint8_t get_servo_delay() const;
 
   void set_servo_h_pos(uint8_t);
   uint8_t get_servo_h_pos() const;
@@ -34,6 +28,19 @@ public:
 
   void set_servo_delay(uint16_t);
   uint16_t get_servo_delay() const;
+
+  void set_msg(String & s);
+  String get_msg() const;
+  void outdate_msg();
+
+  bool MsgUpdated() const;
+
+  unsigned long TimeSinceMsgUpdate() const;
+
+private:
+  bool msg_updated;
+  String msg;
+  unsigned long msg_update_time;
 };
 
 

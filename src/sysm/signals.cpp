@@ -1,6 +1,12 @@
 #include "sysm/signals.h"
 #include <ESP8266WiFi.h>
-Signals::Signals(){}
+Signals::Signals() :
+msg(""),
+msg_updated(false),
+msg_update_time(millis())
+{
+  EEPROM.begin(128);
+}
 
 Signals::~Signals(){}
 
@@ -13,7 +19,7 @@ void Signals::setup()
 
 void Signals::set_id(uint8_t id)
 {
-    //Serial.print("Setting id: ");Serial.println(n);
+    Serial.print("Setting id: ");Serial.println(id);
     EEPROM.write(ID_ADDR,id);
     EEPROM.commit();
 }
@@ -57,4 +63,28 @@ void Signals::set_servo_l_pos(uint8_t pos)
 uint8_t Signals::get_servo_l_pos() const
 {
    return EEPROM.read(SERVO_L_POS_ADDR);
+}
+
+
+void Signals::set_msg(String &s)
+{
+  msg_updated = true;
+  msg_update_time = millis();
+  msg = s;
+}
+String Signals::get_msg() const
+{
+  return msg;
+}
+void Signals::outdate_msg()
+{
+  msg_updated = false;
+}
+bool Signals::MsgUpdated() const
+{
+  return msg_updated;
+}
+unsigned long Signals::TimeSinceMsgUpdate() const
+{
+  return (millis() - msg_update_time);
 }

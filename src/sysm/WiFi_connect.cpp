@@ -18,15 +18,16 @@ const char* ssid_x = "TN_24GHz_C587A5";
 const char* password_x = "68E84C8ED7";
 
 
-IPAddress local_IP(192,168,4,22);
-IPAddress gateway(192,168,4,22);
-IPAddress subnet(255,255,255,0);
+
 
 
 // Initialize the client library
 WiFiClient WiFi_connecter::client = WiFiClient();
 
-WiFi_connecter::WiFi_connecter(Signals & s) : sig(s)
+WiFi_connecter::WiFi_connecter(Signals & s) : sig(s),
+avoid_wifi_list({}),
+prefered_wifi("ESPWiFi_tg99"),
+try_out_wifi_string("ESPWiFi_tg")
 {
 
 }
@@ -66,12 +67,26 @@ void WiFi_connecter::find_sta_and_connect()
     {
       Serial.println("Scan in prog");
     }
-    if (n)
+      if (n)
     {
       Serial.println("scan complete");
 
       String sta = "";
       String m_sta = MAIN_STA;
+
+      int connect_to = select_wifi_to_connect(n);
+      if(connect_to >= 0)
+      {
+            WiFi.begin(WiFi.SSID(connect_to).c_str(), MAIN_STA_PW);
+            if(WiFi.waitForConnectResult() == WL_CONNECTED)
+            {
+              Serial.print("Connected to: ");Serial.println(WiFi.SSID(connect_to));
+              state = 2;
+              break;
+            }
+      }
+
+      /*
 
       for (int i = 0; i < n; i++)
       {
@@ -79,17 +94,17 @@ void WiFi_connecter::find_sta_and_connect()
         Serial.println(sta);
         if(sta.length() >= m_sta.length() )
         {
-        if(WiFi.SSID(i).substring(0,m_sta.length())==m_sta)
-        {
-          WiFi.begin(WiFi.SSID(i).c_str(), MAIN_STA_PW);
-          if(WiFi.waitForConnectResult() == WL_CONNECTED)
+          if(WiFi.SSID(i).substring(0,m_sta.length())==m_sta)
           {
-            Serial.print("Connected to: ");Serial.println(WiFi.SSID(i));
-            state = 2;
-            break;
+            WiFi.begin(WiFi.SSID(i).c_str(), MAIN_STA_PW);
+            if(WiFi.waitForConnectResult() == WL_CONNECTED)
+            {
+              Serial.print("Connected to: ");Serial.println(WiFi.SSID(i));
+              state = 2;
+              break;
+            }
           }
         }
-      }
       }
 
 
@@ -112,6 +127,7 @@ void WiFi_connecter::find_sta_and_connect()
           }
         }
       }
+      */
       state = 2;
     }
     break;
@@ -126,6 +142,49 @@ void WiFi_connecter::find_sta_and_connect()
   }
 }
 
+int WiFi_connecter::select_wifi_to_connect(int n)
+{
+  for (int i = 0; i < n; i++)
+  {
+    String sta =WiFi.SSID(i);
+
+    // Is it the prefered_wifi select it directly
+    if (sta == prefered_wifi)
+    {
+      Serial.print(sta);
+      Serial.println(" Selected!");
+      return i;
+    }
+
+    // If the first part mach try out string check if in avoid list else connect
+    if(sta.length() >= try_out_wifi_string.length() )
+    {
+      if(WiFi.SSID(i).substring(0,try_out_wifi_string.length())==try_out_wifi_string)
+      {
+        if (!sta_in_avoid_list(sta))
+        {
+          Serial.print(sta);
+          Serial.println(" Selected!");
+          return i;
+        }
+      }
+    }
+    Serial.println(sta);
+  }
+
+  Serial.println("**** NO WIFI TO CONNECT ****");
+  return -1;
+}
+
+bool WiFi_connecter::sta_in_avoid_list(String & sta) const
+{
+  for(int b =0; b< AVOID_WIFI_COUNT; b++)
+  {
+    if(avoid_wifi_list[b] == sta) return true;
+  }
+  return false;
+}
+
 void WiFi_connecter::check_wifi_connections()
 {
 
@@ -133,7 +192,9 @@ void WiFi_connecter::check_wifi_connections()
     case WIFI_AP_STA:
     if(!WiFi.isConnected() || !sta_con_main())
     {
+      if(sig.TimeSinceMsgUpdate() > 10000)
       find_sta_and_connect();
+      ;
 
       //Serial.println("Wifi main STA disconnected");
 
@@ -143,7 +204,7 @@ void WiFi_connecter::check_wifi_connections()
     }
     break;
     case WIFI_AP:
-    find_sta_and_connect();
+    //find_sta_and_connect();
 
     break;
     default:
@@ -156,8 +217,8 @@ bool WiFi_connecter::sta_con_main()
 {
   String m_sta = MAIN_STA;
 
-    if(WiFi.SSID().length() >= m_sta.length() )
-    {
+  if(WiFi.SSID().length() >= m_sta.length() )
+  {
     if(WiFi.SSID().substring(0,m_sta.length())==m_sta)
     {
       return true;
@@ -189,6 +250,10 @@ void WiFi_connecter::connect_to_main_sta()
 }
 void WiFi_connecter::setup()
 {
+
+  IPAddress local_IP(172,17,sig.get_id(),22);
+  IPAddress gateway(172,17,7,22);
+  IPAddress subnet(255,255,255,0);
   Serial.println("Wifi connect setup");
   WiFi.mode(WIFI_AP_STA);
   //WiFi.hostname(HOSTNAME);
@@ -199,6 +264,17 @@ void WiFi_connecter::setup()
 
   find_sta_and_connect();
 
+  /*
+  WiFi.mode(WIFI_AP);
+  WiFi.hostname("train_switcher");
+  WiFi.softAPConfig(local_IP, gateway, subnet);
+
+  String ssid_string = String(ssid_ap)+String(sig.get_id());
+  WiFi.softAP(ssid_string.c_str(),password_ap);
+  //WiFi.softAP(ssid_ap,password_ap);
+  delay(1000);
+  */
+
 
 
 
@@ -206,7 +282,7 @@ void WiFi_connecter::setup()
 
 void WiFi_connecter::update()
 {
-  Serial.println("WiFi update");
+  //Serial.println("WiFi update");
   check_wifi_connections();
 
 }
