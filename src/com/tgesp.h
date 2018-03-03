@@ -11,6 +11,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
+#include "sig/signals.h"
 #define SERIAL_BUFF_READ_SIZE 10
 #define TGESP_UPDATE_RATE_MS 100
 
@@ -20,7 +21,11 @@
 
 class tgesp {
 public:
+<<<<<<< HEAD
 	tgesp(Signals & s);
+=======
+	tgesp(Signals & sig);
+>>>>>>> origin/master
 	void scanWifi();
 	void setup();
 	void update();
@@ -42,7 +47,11 @@ public:
 	virtual ~tgesp();
     Commands cmds;
 private:
+<<<<<<< HEAD
 	Signals & sig;
+=======
+	Signals sig;
+>>>>>>> origin/master
     void output(const char *);
     void send_response();
     static char serial_buff[];

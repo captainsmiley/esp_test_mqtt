@@ -70,10 +70,16 @@ void WiFi_connecter::find_sta_and_connect()
     {
       Serial.println("scan complete");
 
+      String sta = "";
+      String m_sta = MAIN_STA;
+
       for (int i = 0; i < n; i++)
       {
-        Serial.println(WiFi.SSID(i));
-        if(WiFi.SSID(i)==String(MAIN_STA))
+        sta =WiFi.SSID(i);
+        Serial.println(sta);
+        if(sta.length() >= m_sta.length() )
+        {
+        if(WiFi.SSID(i).substring(0,m_sta.length())==m_sta)
         {
           WiFi.begin(WiFi.SSID(i).c_str(), MAIN_STA_PW);
           if(WiFi.waitForConnectResult() == WL_CONNECTED)
@@ -83,6 +89,7 @@ void WiFi_connecter::find_sta_and_connect()
             break;
           }
         }
+      }
       }
 
 
@@ -147,7 +154,17 @@ void WiFi_connecter::check_wifi_connections()
 
 bool WiFi_connecter::sta_con_main()
 {
-  return WiFi.SSID()==String(MAIN_STA);
+  String m_sta = MAIN_STA;
+
+    if(WiFi.SSID().length() >= m_sta.length() )
+    {
+    if(WiFi.SSID().substring(0,m_sta.length())==m_sta)
+    {
+      return true;
+
+    }
+  }
+  return false;
 }
 
 void WiFi_connecter::connect_to_main_sta()

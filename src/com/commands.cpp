@@ -7,14 +7,20 @@
 
 
 
+<<<<<<< HEAD
 Commands::Commands(tgesp* e,Signals & s) :
     servo_h_pos(s.get_servo_h_pos()),
     servo_l_pos(s.get_servo_l_pos()),
+=======
+Commands::Commands(tgesp* e) :
+    servo_h_pos(SERVO_H_POS),
+    servo_l_pos(SERVO_L_POS),
+>>>>>>> origin/master
 	client_ip(192,168,0,105),
   sig(s),
 	esp(e)
 {
-  EEPROM.begin(128);
+
 }
 
 Commands::~Commands(){}
@@ -183,7 +189,7 @@ void Commands::controll(const char *p)
     //uint16_t sh = get_id();
     //Serial.println(sh);
 
-    if ( n & (0x01 << get_id() ) )
+    if ( n & (0x0001 << get_id() ) )
     {
       Serial.println("servo_h");
       servo_h();
