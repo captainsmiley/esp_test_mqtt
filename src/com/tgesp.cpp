@@ -14,10 +14,11 @@
 char tgesp::serial_buff[SERIAL_BUFF_READ_SIZE];
 size_t tgesp::serial_buff_pos = 0;
 
-tgesp::tgesp() : server(80),
+tgesp::tgesp(Signals & s) : server(80),
     client_connected(false),
 	serial_dbg(true),
-    cmds(this)
+    cmds(this,s),
+    sig(s)
 {
 }
 

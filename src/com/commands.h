@@ -5,6 +5,7 @@
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
 #include <WiFiUdp.h>
+#include "sysm/signals.h"
 
 class tgesp;
 //#include "Params.h"
@@ -19,7 +20,7 @@ class tgesp;
 class Commands {
 public:
     static Servo sv;
-	Commands(tgesp *);
+	Commands(tgesp *,Signals &sig);
     static void test_gpio(const char * p);
     static void http_get();
     static void read_distance();
@@ -49,6 +50,7 @@ private:
     uint8_t servo_h_pos;
     uint8_t servo_l_pos;
     tgesp *esp;
+    Signals &sig;
 
 };
 

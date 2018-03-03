@@ -15,11 +15,12 @@
 #define TGESP_UPDATE_RATE_MS 100
 
 #include "com/commands.h"
+#include "sysm/signals.h"
 //class Commands;
 
 class tgesp {
 public:
-	tgesp();
+	tgesp(Signals & s);
 	void scanWifi();
 	void setup();
 	void update();
@@ -41,6 +42,7 @@ public:
 	virtual ~tgesp();
     Commands cmds;
 private:
+	Signals & sig;
     void output(const char *);
     void send_response();
     static char serial_buff[];

@@ -26,7 +26,7 @@ IPAddress subnet(255,255,255,0);
 // Initialize the client library
 WiFiClient WiFi_connecter::client = WiFiClient();
 
-WiFi_connecter::WiFi_connecter(Signals s) : sig(s)
+WiFi_connecter::WiFi_connecter(Signals & s) : sig(s)
 {
 
 }

@@ -5,15 +5,13 @@
 #include <WiFiUdp.h>
 #include "com/tgesp.h"
 
-#define SERVO_H_POS_ADDR 0x00
-#define SERVO_L_POS_ADDR 0x01
-#define SERVO_DELAY_ADDR 0x02
-#define ID_ADDR 0x04
 
-Commands::Commands(tgesp* e) :
-    servo_h_pos(SERVO_H_POS),
-    servo_l_pos(SERVO_L_POS),
+
+Commands::Commands(tgesp* e,Signals & s) :
+    servo_h_pos(s.get_servo_h_pos()),
+    servo_l_pos(s.get_servo_l_pos()),
 	client_ip(192,168,0,105),
+  sig(s),
 	esp(e)
 {
   EEPROM.begin(128);
@@ -134,9 +132,8 @@ void Commands::test_servo(const char * p)
 void Commands::servo_h()
 {
     sv.attach(SERVO_PIN);
-    sv.write(EEPROM.read(SERVO_H_POS_ADDR));
-    uint16_t d_time = (EEPROM.read(SERVO_DELAY_ADDR+1) << 8) | EEPROM.read(SERVO_DELAY_ADDR);
-    delay(d_time);
+    sv.write(sig.get_servo_h_pos());
+    delay(sig.get_servo_delay());
 //    delay( (EEPROM.read(SERVO_DELAY_ADDR+1) << 8) | EEPROM.read(SERVO_DELAY_ADDR));
     sv.detach();
 }
@@ -144,9 +141,7 @@ void Commands::set_servo_delay(const char *p)
 {
   String p_s(p);
   uint16_t s_delay = uint16_t(p_s.toInt());
-  EEPROM.write(SERVO_DELAY_ADDR, uint8_t( s_delay & 0x00FF) );
-  EEPROM.write(SERVO_DELAY_ADDR+1, uint8_t( (s_delay & 0xFF00) >> 8 ));
-  EEPROM.commit();
+  sig.set_servo_delay(s_delay);
 
 }
 
@@ -155,23 +150,20 @@ void Commands::set_servo_delay(const char *p)
 void Commands::servo_l()
 {
     sv.attach(SERVO_PIN);
-    sv.write(EEPROM.read(SERVO_L_POS_ADDR));
-    uint16_t d_time = (EEPROM.read(SERVO_DELAY_ADDR+1) << 8) | EEPROM.read(SERVO_DELAY_ADDR);
-    delay(d_time);
+    sv.write(sig.get_servo_l_pos());
+    delay(sig.get_servo_delay());
     sv.detach();
 }
 
 void Commands::set_servo_h_pos(const char *p)
 {
     String p_s(p);
-    EEPROM.write(SERVO_H_POS_ADDR,uint8_t(p_s.toInt()));
-    EEPROM.commit();
+    sig.set_servo_h_pos(p_s.toInt());
 }
 void Commands::set_servo_l_pos(const char *p)
 {
     String p_s(p);
-    EEPROM.write(SERVO_L_POS_ADDR,uint8_t(p_s.toInt()));
-    EEPROM.commit();
+    sig.set_servo_h_pos(p_s.toInt());
 }
 
 void Commands::set_id(const char *p)
@@ -179,8 +171,7 @@ void Commands::set_id(const char *p)
     String p_s(p);
     uint8_t n = p_s.toInt();
     Serial.print("Setting id: ");Serial.println(n);
-    EEPROM.write(ID_ADDR,n);
-    EEPROM.commit();
+    sig.set_id(n);
 }
 void Commands::controll(const char *p)
 {
@@ -222,7 +213,7 @@ void Commands::send_info_to_clients(const char *p)
     IPaddress = &stat_info->ip;
     address = IPaddress->addr;
 
-    
+
     client.setNoDelay(true);
     client.setTimeout(110);
     Serial.print("Send to: ");Serial.println(address);
@@ -249,5 +240,5 @@ void Commands::send_info_to_clients(const char *p)
 
 uint8_t Commands::get_id()
 {
-  return EEPROM.read(ID_ADDR);
+  return sig.get_id();
 }

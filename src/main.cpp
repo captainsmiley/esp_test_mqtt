@@ -6,7 +6,7 @@
 #include "conf.h"
 
 #include "sysm/WiFi_connect.h"
-#include "sig/signals.h"
+#include "sysm/signals.h"
 #include "sysm/OTA.h"
 #include "app/test_mqtt.h"
 
@@ -41,7 +41,7 @@ void mqtt_update()
 #endif
 
 #if COMMANDS_ENABLED
-tgesp com;
+tgesp com(sig);
 
 void com_update()
 {

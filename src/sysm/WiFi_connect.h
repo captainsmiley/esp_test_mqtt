@@ -6,7 +6,7 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-#include "sig/signals.h"
+#include "sysm/signals.h"
 
 
 #define WIFI_CON_UPDATE_RATE_MS 5000
@@ -19,7 +19,7 @@ public:
   bool ap_ok;
   bool sta_ok;
   const static uint16_t update_rate = WIFI_CON_UPDATE_RATE_MS;
-  WiFi_connecter(Signals s);
+  WiFi_connecter(Signals & s);
   virtual ~WiFi_connecter();
 
   void update();
@@ -34,7 +34,7 @@ public:
     void find_sta_and_connect();
     void connect_to_main_sta();
     void check_wifi_connections();
-    Signals sig;
+    Signals  & sig;
     void print_wl_status();
     void find_clients();
     void check_OTA();
