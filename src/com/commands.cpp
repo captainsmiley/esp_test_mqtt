@@ -5,10 +5,7 @@
 #include <WiFiUdp.h>
 #include "com/tgesp.h"
 
-#define SERVO_H_POS_ADDR 0x00
-#define SERVO_L_POS_ADDR 0x01
-#define SERVO_DELAY_ADDR 0x02
-#define ID_ADDR 0x04
+
 
 Commands::Commands(tgesp* e) :
     servo_h_pos(SERVO_H_POS),
@@ -16,7 +13,7 @@ Commands::Commands(tgesp* e) :
 	client_ip(192,168,0,105),
 	esp(e)
 {
-  EEPROM.begin(128);
+
 }
 
 Commands::~Commands(){}
@@ -192,7 +189,7 @@ void Commands::controll(const char *p)
     //uint16_t sh = get_id();
     //Serial.println(sh);
 
-    if ( n & (0x01 << get_id() ) )
+    if ( n & (0x0001 << get_id() ) )
     {
       Serial.println("servo_h");
       servo_h();
@@ -222,7 +219,7 @@ void Commands::send_info_to_clients(const char *p)
     IPaddress = &stat_info->ip;
     address = IPaddress->addr;
 
-    
+
     client.setNoDelay(true);
     client.setTimeout(110);
     Serial.print("Send to: ");Serial.println(address);

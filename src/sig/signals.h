@@ -4,7 +4,7 @@
 #include <EEPROM.h>
 #define SIGNALS_UPDATE_RATE_MS 100
 
-#define ID_ADDR 0x04
+
 
 class Signals
 {
@@ -13,6 +13,8 @@ public:
   virtual ~Signals();
   void set_id(uint8_t);
   uint8_t get_id() const;
+  void set_servo_delay(uint8_t);
+  uint8_t get_servo_delay() const;
 
   const static uint8_t update_rate = SIGNALS_UPDATE_RATE_MS;
   void setup();

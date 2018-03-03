@@ -41,13 +41,21 @@ void mqtt_update()
 #endif
 
 #if COMMANDS_ENABLED
-tgesp com;
+tgesp com(sig);
 
 void com_update()
 {
   com.update();
 }
 #endif
+
+#include "app/msg_sender.h"
+MsgSender msg_s(&(com.cmds));
+void msg_sender_update()
+{
+  msg_s.update();
+}
+
 
 
 unsigned long int t_g;
@@ -94,9 +102,12 @@ void setup()
   ts.add(3,com.update_rate,com_update);
   #endif
 
+  msg_s.setup();
+
 
   ts.add(1, wc.update_rate,wifi_con_update);
   ts.add(0,ota.update_rate,ota_update);
+  ts.add(2, msg_s.update_rate,msg_sender_update);
   ts.add(4,1000,print_info);
 
 

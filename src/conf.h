@@ -27,6 +27,8 @@
 
 #define SSID_AP         "ESPWiFi_tg"
 #define PASS_AP         "connectme"
+#define SSID_AP_1 "ESPWiFi_TrainController"
+#define PASS_AP_1 "connectme"
 
 #define HOSTNAME        "tgtest_esp"
 
