@@ -42,6 +42,31 @@ uint16_t Signals::get_servo_delay() const
     return  (EEPROM.read(SERVO_DELAY_ADDR+1) << 8) | EEPROM.read(SERVO_DELAY_ADDR);
 }
 
+void Signals::set_main_sta(String &s)
+{
+  Serial.println("writes main sta: "+s);
+  if(s.length() > MAIN_STA_MAX_LEN) return;
+  for(int i=0;i<s.length();i++)
+  {
+    EEPROM.write(i+MAIN_STA_ADDR,s[i]);
+  }
+  EEPROM.write(MAIN_STA_LEN_ADDR,s.length());
+    EEPROM.commit();
+
+}
+
+String Signals::get_main_sta() const
+{
+  String s = "";
+  int n =EEPROM.read(MAIN_STA_LEN_ADDR);
+  Serial.println("read len: "+String(n));
+  for(int i=0;i<n;++i)
+  {
+    s+= char(EEPROM.read(i+MAIN_STA_ADDR));
+  }
+  return s;
+}
+
 void Signals::set_servo_h_pos(uint8_t pos)
 {
     //Serial.print("Setting id: ");Serial.println(n);

@@ -41,9 +41,12 @@ public:
     const char * cmp_input(const char * input, const char * cmp);
 	virtual ~tgesp();
     Commands cmds;
-private:
-	Signals & sig;
     void output(const char *);
+private:
+
+	enum SERVER_STATE {WAITING,HANDLING_CLIENT,STOPED};
+	SERVER_STATE server_state;
+	Signals & sig;
     void send_response();
     static char serial_buff[];
     static size_t serial_buff_pos;

@@ -6,6 +6,7 @@
 #include <EEPROM.h>
 #include <WiFiUdp.h>
 #include "sysm/signals.h"
+//#include "com/udp_debug.h"
 
 class tgesp;
 //#include "Params.h"
@@ -32,16 +33,22 @@ public:
     void set_servo_h_pos(const char *p);
     void set_servo_l_pos(const char *p);
     void set_servo_delay(const char *p);
-    void set_client_ip(const char *p);
+    void set_udp_client_ip(const char *p);
     void send_params_serial(const char *p);
     void send_serial(const char *p);
     void wifi_setup(const char *p);
     void connect(const char *p);
     void set_id(const char *p);
+    void set_main_sta(const char *p);
+    void get_main_sta();
+    void get_servo_delay();
+    void get_servo_h_pos();
+    void get_servo_l_pos();
     void controll(const char *p);
     void send_info_to_clients(const char *p);
     uint8_t get_id();
 	virtual ~Commands();
+    //UdpDebug udp;
 
 private:
 	//Params pars_params(const char *p);

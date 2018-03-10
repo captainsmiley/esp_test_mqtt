@@ -18,6 +18,7 @@ tgesp::tgesp(Signals & s) : server(80),
     client_connected(false),
 	serial_dbg(true),
     cmds(this,s),
+    server_state(WAITING),
     sig(s)
 {
 }
@@ -30,7 +31,21 @@ void tgesp::setup()
 
 void tgesp::update()
 {
-  listen_for_clients();
+  switch(server_state)
+  {
+    case WAITING:
+    server_state = HANDLING_CLIENT;
+    listen_for_clients();
+    server_state = WAITING;
+    break;
+    case HANDLING_CLIENT:
+    break;
+    case STOPED:
+    break;
+    default:
+    Serial.println("err state");
+    break;
+  }
 }
 
 void tgesp::debugg()
@@ -41,7 +56,6 @@ void tgesp::debugg()
 void tgesp::stop()
 {
 	server.stop();
-	udp.stop();
 }
 
 void tgesp::listen_for_clients()
@@ -131,7 +145,6 @@ bool tgesp::connectToWifi(const char * ssid_p, const char * pass_p)
 
 const char * tgesp::cmp_input(const char * input, const char * cmp)
 {
-
     if (*cmp == '\0') {
         if (*input == '\0') return input;
         if (*input == 32) return ++input;
@@ -145,7 +158,7 @@ const char * tgesp::cmp_input(const char * input, const char * cmp)
 
 void tgesp::handle_command(const char * input)
 {
-    output("handling command: "); output(input); output("\n");
+    output("<p>handling command: "); output(input); output("</p>");
 
        const char * parameter;
 
@@ -190,7 +203,7 @@ void tgesp::handle_command(const char * input)
        if ((parameter = cmp_input(input,"set_client_ip")))
        {
            if (serial_dbg) Serial.print("Runs set_client_ip("); if (serial_dbg) Serial.print(parameter); Serial.print(")\n");
-           cmds.set_client_ip(parameter);
+           cmds.set_udp_client_ip(parameter);
        }
        if ((parameter = cmp_input(input,"send_serial")))
        {
@@ -219,6 +232,31 @@ void tgesp::handle_command(const char * input)
        {
            if (serial_dbg) Serial.print("Runs set_id("); if (serial_dbg) Serial.print(parameter); Serial.print(")\n");
            cmds.set_id(parameter);
+       }
+       if ((parameter = cmp_input(input,"set_main_sta")))
+       {
+           if (serial_dbg) {Serial.print("Runs set_main_sta("); Serial.print(parameter); Serial.print(")\n"); }
+           cmds.set_main_sta(parameter);
+       }
+       if (cmp_input(input,"get_main_sta"))
+       {
+         if (serial_dbg) Serial.println("Runs get_main_sta()");
+         cmds.get_main_sta();
+       }
+       if (cmp_input(input,"get_servo_delay"))
+       {
+         if (serial_dbg) Serial.println("Runs get_servo_delay()");
+         cmds.get_servo_delay();
+       }
+       if (cmp_input(input,"get_servo_l_pos"))
+       {
+         if (serial_dbg) Serial.println("Runs get_servo_l_pos()");
+         cmds.get_servo_l_pos();
+       }
+       if (cmp_input(input,"get_servo_h_pos"))
+       {
+         if (serial_dbg) Serial.println("Runs get_servo_h_pos()");
+         cmds.get_servo_h_pos();
        }
 
 
@@ -297,7 +335,7 @@ void tgesp::read_client(WiFiClient & client)
 
 void tgesp::send_response()
 {
-  Serial.println("sending response");
+  //Serial.println("sending response");
     // send a standard http response header
     connected_client.print("HTTP/1.1 200 OK\r\n");
     connected_client.print("Content-Type: text/html\r\n");

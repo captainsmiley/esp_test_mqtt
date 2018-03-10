@@ -37,6 +37,6 @@ void OTA::setup()
     else if (error == OTA_END_ERROR) Serial.println("End Failed");
   });
   ArduinoOTA.begin();
-  //delay(1000); //use if problems.
+  delay(1000); //use if problems.
 
 }

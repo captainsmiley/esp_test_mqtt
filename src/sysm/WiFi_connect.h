@@ -33,6 +33,13 @@ public:
   bool sta_con_main();
   static WiFiClient client;
   private:
+    enum MAIN_STATES {NEW_SEARCH,SEARCHING,CONNECTED};
+    MAIN_STATES main_state;
+    unsigned long TimeSinceLastConnect()const;
+    unsigned long TimeSinceLastScan()const;
+    unsigned long connect_time;
+    unsigned long scan_time;
+    void AddToAvoidList(String s);
     int select_wifi_to_connect(int n);
     void find_sta_and_connect();
     void connect_to_main_sta();
@@ -46,6 +53,8 @@ public:
      const char* ap_password;
 
      String avoid_wifi_list[AVOID_WIFI_COUNT];
+
+     uint8_t avoid_pos;
      String prefered_wifi;
      String try_out_wifi_string;
 

@@ -13,6 +13,7 @@ Commands::Commands(tgesp* e,Signals & s) :
 	client_ip(192,168,0,105),
   sig(s),
 	esp(e)
+  //udp(UdpDebug())
 {
 
 }
@@ -35,8 +36,11 @@ void Commands::test_gpio(const char * p)
 
 }
 
-void Commands::set_client_ip(const char *p)
+void Commands::set_udp_client_ip(const char *p)
 {
+  //udp.set_client_ip(p);
+  //udp.Start();
+  /*
 	String p_s(p);
 	int index1 = p_s.indexOf('.');
 	int index2 = p_s.indexOf('.',index1+1);
@@ -54,6 +58,7 @@ void Commands::set_client_ip(const char *p)
 			p_s.substring(index3+1).toInt()
 			);
 	client_ip = ip;
+  */
 }
 
 void Commands::wifi_setup(const char *p)
@@ -163,7 +168,7 @@ void Commands::set_servo_h_pos(const char *p)
 void Commands::set_servo_l_pos(const char *p)
 {
     String p_s(p);
-    sig.set_servo_h_pos(p_s.toInt());
+    sig.set_servo_l_pos(p_s.toInt());
 }
 
 void Commands::set_id(const char *p)
@@ -173,6 +178,33 @@ void Commands::set_id(const char *p)
     Serial.print("Setting id: ");Serial.println(n);
     sig.set_id(n);
 }
+void Commands::set_main_sta(const char *p)
+{
+    String p_s(p);
+    sig.set_main_sta(p_s);
+}
+
+void Commands::get_main_sta()
+{
+  esp->output(String("Main sta: "+ sig.get_main_sta()).c_str());
+}
+
+void Commands::get_servo_delay()
+{
+  esp->output("Servo delay: ");
+  esp->output(String(sig.get_servo_delay()).c_str());
+}
+void Commands::get_servo_h_pos()
+{
+  esp->output("Servo h pos: ");
+  esp->output(String(sig.get_servo_h_pos()).c_str());
+}
+void Commands::get_servo_l_pos()
+{
+  esp->output("Servo l pos: ");
+  esp->output( String(sig.get_servo_l_pos()) .c_str() );
+}
+
 void Commands::controll(const char *p)
 {
     String p_s(p);

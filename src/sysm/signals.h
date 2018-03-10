@@ -8,6 +8,9 @@
 #define SERVO_L_POS_ADDR 0x01
 #define SERVO_DELAY_ADDR 0x02
 #define ID_ADDR 0x04
+#define MAIN_STA_ADDR 0x05
+#define MAIN_STA_MAX_LEN 20
+#define MAIN_STA_LEN_ADDR 0x26
 
 class Signals
 {
@@ -36,6 +39,11 @@ public:
   bool MsgUpdated() const;
 
   unsigned long TimeSinceMsgUpdate() const;
+
+  String get_main_sta() const;
+  void set_main_sta(String & s);
+
+
 
 private:
   bool msg_updated;
