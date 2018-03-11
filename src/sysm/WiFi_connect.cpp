@@ -26,8 +26,8 @@ WiFiClient WiFi_connecter::client = WiFiClient();
 
 WiFi_connecter::WiFi_connecter(Signals & s) : sig(s),
 avoid_wifi_list({}),
-prefered_wifi("ESPWiFi_tg99"),
-try_out_wifi_string(sig.get_main_sta()),
+prefered_wifi(sig.get_main_sta()),
+try_out_wifi_string(sig.get_try_sta()),
 connect_time(0),
 scan_time(20000),
 main_state(NEW_SEARCH),
@@ -88,10 +88,26 @@ void WiFi_connecter::find_sta_and_connect()
       int connect_to = select_wifi_to_connect(n);
       if(connect_to >= 0)
       {
+        WiFi.disconnect();
         WiFi.begin(WiFi.SSID(connect_to).c_str(), MAIN_STA_PW);
-        if(WiFi.waitForConnectResult() == WL_CONNECTED)
+        Serial.print("Try to connect to ");Serial.print(WiFi.SSID(connect_to).c_str());
+        uint8_t times = 0;
+        while(WiFi.status() != WL_CONNECTED)
         {
-          Serial.print("Connected to: ");Serial.println(WiFi.SSID(connect_to));
+          times++;
+          delay(500);
+          Serial.print(".");
+          if(times>10)
+          {
+            Serial.println("Failed");
+            main_state = NEW_SEARCH;
+            AddToAvoidList(WiFi.SSID(connect_to).c_str());
+            break;
+          }
+        }
+        if(WiFi.status() == WL_CONNECTED)
+        {
+          Serial.println("Connected!");
           connect_time = millis();
           main_state = CONNECTED;
           break;
@@ -123,12 +139,20 @@ int WiFi_connecter::select_wifi_to_connect(int n)
     // Is it the prefered_wifi select it directly
     if (sta == prefered_wifi)
     {
-      Serial.println(" Selected!");
-      return i;
+      if (!sta_in_avoid_list(sta))
+      {
+        Serial.println(" Selected!");
+        return i;
+      }
+      else
+      {
+        Serial.println(" - In avoid list");
+        last_chans = i;
+      }
     }
 
-    // If the first part mach try out string check if in avoid list else connect
-    if(sta.length() >= try_out_wifi_string.length() )
+      // If the first part mach try out string check if in avoid list else connect
+    else if(sta.length() >= try_out_wifi_string.length() )
     {
       if(WiFi.SSID(i).substring(0,try_out_wifi_string.length())==try_out_wifi_string)
       {
@@ -228,7 +252,7 @@ bool WiFi_connecter::sta_in_avoid_list(String & sta) const
 
   bool WiFi_connecter::sta_con_main()
   {
-    String m_sta = MAIN_STA;
+    String m_sta = sig.get_main_sta();
 
     if(WiFi.SSID().length() >= m_sta.length() )
     {
@@ -265,7 +289,7 @@ bool WiFi_connecter::sta_in_avoid_list(String & sta) const
   {
 
     IPAddress local_IP(172,17,sig.get_id(),22);
-    IPAddress gateway(172,17,7,22);
+    IPAddress gateway(172,17,sig.get_id(),22);
     IPAddress subnet(255,255,255,0);
     Serial.println("Wifi connect setup");
     WiFi.mode(WIFI_AP_STA);

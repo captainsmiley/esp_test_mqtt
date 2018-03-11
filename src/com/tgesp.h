@@ -44,6 +44,8 @@ public:
     void output(const char *);
 private:
 
+unsigned long int TimeSinceClientConnect();
+	unsigned long int client_connect_time;
 	enum SERVER_STATE {WAITING,HANDLING_CLIENT,STOPED};
 	SERVER_STATE server_state;
 	Signals & sig;

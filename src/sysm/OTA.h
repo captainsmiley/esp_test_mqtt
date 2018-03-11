@@ -6,7 +6,7 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-#define OTA_UPDATE_RATE_MS 2000
+#define OTA_UPDATE_RATE_MS 100
 
 class OTA
 {

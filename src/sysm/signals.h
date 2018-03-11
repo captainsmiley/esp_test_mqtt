@@ -9,8 +9,14 @@
 #define SERVO_DELAY_ADDR 0x02
 #define ID_ADDR 0x04
 #define MAIN_STA_ADDR 0x05
-#define MAIN_STA_MAX_LEN 20
-#define MAIN_STA_LEN_ADDR 0x26
+#define MAIN_STA_MAX_LEN 30
+#define MAIN_STA_LEN_ADDR 0x36
+#define TRY_STA_ADDR 0x37
+#define TRY_STA_MAX_LEN 20
+#define TRY_STA_LEN_ADDR 0x58
+#define SELF_STA_ADDR 0x59
+#define SELF_STA_MAX_LEN 20
+#define SELF_STA_LEN_ADDR 0x80
 
 class Signals
 {
@@ -43,7 +49,11 @@ public:
   String get_main_sta() const;
   void set_main_sta(String & s);
 
+  String get_try_sta() const;
+  void set_try_sta(String & s);
 
+  String get_self_sta() const;
+  void set_self_sta(String & s);
 
 private:
   bool msg_updated;

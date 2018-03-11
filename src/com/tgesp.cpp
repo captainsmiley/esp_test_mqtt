@@ -63,8 +63,10 @@ void tgesp::listen_for_clients()
     WiFiClient client = server.available();
     if (client) {
       Serial.println("client_connected");
+      client_connect_time = millis();
         client_connected = true;
         connected_client = client;
+        yield();
         read_client(client);
         //client.stop();
         client_connected = false;
@@ -243,6 +245,16 @@ void tgesp::handle_command(const char * input)
          if (serial_dbg) Serial.println("Runs get_main_sta()");
          cmds.get_main_sta();
        }
+       if ((parameter = cmp_input(input,"set_try_sta")))
+       {
+           if (serial_dbg) {Serial.print("Runs set_try_sta("); Serial.print(parameter); Serial.print(")\n"); }
+           cmds.set_try_sta(parameter);
+       }
+       if (cmp_input(input,"get_try_sta"))
+       {
+         if (serial_dbg) Serial.println("Runs get_try_sta()");
+         cmds.get_try_sta();
+       }
        if (cmp_input(input,"get_servo_delay"))
        {
          if (serial_dbg) Serial.println("Runs get_servo_delay()");
@@ -258,7 +270,11 @@ void tgesp::handle_command(const char * input)
          if (serial_dbg) Serial.println("Runs get_servo_h_pos()");
          cmds.get_servo_h_pos();
        }
-
+       if (cmp_input(input,"run_servo_test"))
+       {
+         if (serial_dbg) Serial.println("Runs run_servo_test()");
+         cmds.run_servo_test();
+       }
 
 }
 
@@ -300,6 +316,12 @@ void tgesp::read_client(WiFiClient & client)
     response_content = "";
     uint8_t n_lines =0;
     while (client.connected()) {
+      yield();
+      if (TimeSinceClientConnect() > 10000)
+      {
+        Serial.println("Err timeout connection");
+        return;
+      }
         if (client.available()) {
             char c = client.read();
             // if you've gotten to the end of the line (received a newline
@@ -331,6 +353,11 @@ void tgesp::read_client(WiFiClient & client)
             }
         }
     }
+}
+
+unsigned long int tgesp::TimeSinceClientConnect()
+{
+  return  millis() - client_connect_time;
 }
 
 void tgesp::send_response()

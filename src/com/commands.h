@@ -23,6 +23,7 @@ public:
     static Servo sv;
 	Commands(tgesp *,Signals &sig);
     static void test_gpio(const char * p);
+
     static void http_get();
     static void read_distance();
     static void read_client();
@@ -41,11 +42,14 @@ public:
     void set_id(const char *p);
     void set_main_sta(const char *p);
     void get_main_sta();
+    void set_try_sta(const char *p);
+    void get_try_sta();
     void get_servo_delay();
     void get_servo_h_pos();
     void get_servo_l_pos();
     void controll(const char *p);
     void send_info_to_clients(const char *p);
+    void run_servo_test();
     uint8_t get_id();
 	virtual ~Commands();
     //UdpDebug udp;
