@@ -59,6 +59,10 @@ String Signals::get_main_sta() const
 {
   String s = "";
   int n =EEPROM.read(MAIN_STA_LEN_ADDR);
+  if(n>MAIN_STA_MAX_LEN)
+  {
+    n = MAIN_STA_MAX_LEN;
+  }
   Serial.println("read len: "+String(n));
   for(int i=0;i<n;++i)
   {
@@ -66,6 +70,65 @@ String Signals::get_main_sta() const
   }
   return s;
 }
+
+void Signals::set_try_sta(String &s)
+{
+  Serial.println("writes try sta: "+s);
+  if(s.length() > TRY_STA_MAX_LEN) return;
+  for(int i=0;i<s.length();i++)
+  {
+    EEPROM.write(i+TRY_STA_ADDR,s[i]);
+  }
+  EEPROM.write(TRY_STA_LEN_ADDR,s.length());
+    EEPROM.commit();
+
+}
+
+String Signals::get_try_sta() const
+{
+  String s = "";
+  int n =EEPROM.read(TRY_STA_LEN_ADDR);
+  if(n>TRY_STA_MAX_LEN)
+  {
+    n = TRY_STA_MAX_LEN;
+  }
+  Serial.println("read len: "+String(n));
+  for(int i=0;i<n;++i)
+  {
+    s+= char(EEPROM.read(i+TRY_STA_ADDR));
+  }
+  return s;
+}
+
+void Signals::set_self_sta(String &s)
+{
+  Serial.println("writes self sta: "+s);
+  if(s.length() > SELF_STA_MAX_LEN) return;
+  for(int i=0;i<s.length();i++)
+  {
+    EEPROM.write(i+SELF_STA_ADDR,s[i]);
+  }
+  EEPROM.write(SELF_STA_LEN_ADDR,s.length());
+    EEPROM.commit();
+
+}
+
+String Signals::get_self_sta() const
+{
+  String s = "";
+  int n =EEPROM.read(SELF_STA_LEN_ADDR);
+  if(n>SELF_STA_MAX_LEN)
+  {
+    n = SELF_STA_MAX_LEN;
+  }
+  Serial.println("read len: "+String(n));
+  for(int i=0;i<n;++i)
+  {
+    s+= char(EEPROM.read(i+SELF_STA_ADDR));
+  }
+  return s;
+}
+
 
 void Signals::set_servo_h_pos(uint8_t pos)
 {

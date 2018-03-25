@@ -133,7 +133,20 @@ void Commands::test_servo(const char * p)
     sv.attach(SERVO_PIN);
     sv.write(p_s.toInt());
 }
-
+void Commands::run_servo_test()
+{
+  sv.attach(SERVO_PIN);
+  for(int i=0;i<180;i++)
+  {
+    sv.write(i);
+    delay(10);
+  }
+  for(int i=180;i>0;i--)
+  {
+    sv.write(i);
+    delay(10);
+  }
+}
 void Commands::servo_h()
 {
     sv.attach(SERVO_PIN);
@@ -187,6 +200,16 @@ void Commands::set_main_sta(const char *p)
 void Commands::get_main_sta()
 {
   esp->output(String("Main sta: "+ sig.get_main_sta()).c_str());
+}
+void Commands::set_try_sta(const char *p)
+{
+    String p_s(p);
+    sig.set_try_sta(p_s);
+}
+
+void Commands::get_try_sta()
+{
+  esp->output(String("Main sta: "+ sig.get_try_sta()).c_str());
 }
 
 void Commands::get_servo_delay()
