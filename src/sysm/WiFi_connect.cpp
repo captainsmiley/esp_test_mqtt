@@ -269,7 +269,7 @@ bool WiFi_connecter::sta_in_avoid_list(String & sta) const
     IPAddress subnet(255,255,255,0);
     Serial.println("Wifi connect setup");
     WiFi.mode(WIFI_AP_STA);
-    //WiFi.hostname(HOSTNAME);
+    WiFi.hostname(HOSTNAME);
     WiFi.softAPConfig(local_IP, gateway, subnet);
     String ssid_string = String(ssid_ap)+String(sig.get_id());
     WiFi.softAP(ssid_string.c_str(),password_ap);
