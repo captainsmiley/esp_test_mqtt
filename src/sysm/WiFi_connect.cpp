@@ -70,17 +70,17 @@ void WiFi_connecter::find_sta_and_connect()
     //Serial.println(n);
     if (n == -2)
     {
-      Serial.println("Still scanning");
+      //Serial.println("Still scanning");
       break;
     }
     if(n==-1)
     {
-      Serial.println("Scan in prog");
+      //Serial.println("Scan in prog");
       break;
     }
     if (n>=0)
     {
-      Serial.println("scan complete");
+      //Serial.println("scan complete");
 
       String sta = "";
       String m_sta = MAIN_STA;
@@ -135,18 +135,18 @@ int WiFi_connecter::select_wifi_to_connect(int n)
   {
     String sta =WiFi.SSID(i);
 
-    Serial.print(sta);
+    //Serial.print(sta);
     // Is it the prefered_wifi select it directly
     if (sta == prefered_wifi)
     {
       if (!sta_in_avoid_list(sta))
       {
-        Serial.println(" Selected!");
+        //Serial.println(" Selected!");
         return i;
       }
       else
       {
-        Serial.println(" - In avoid list");
+        //Serial.println(" - In avoid list");
         last_chans = i;
       }
     }
@@ -158,23 +158,23 @@ int WiFi_connecter::select_wifi_to_connect(int n)
       {
         if (!sta_in_avoid_list(sta))
         {
-          Serial.println(" - Suggested!");
+          //Serial.println(" - Suggested!");
           suggested = i;
         }
         else
         {
-          Serial.println(" - In avoid list");
+          //Serial.println(" - In avoid list");
           last_chans = i;
         }
       }
       else
       {
-        Serial.println(" - Not valid");
+        //Serial.println(" - Not valid");
       }
     }
     else
     {
-      Serial.println(" - Not valid");
+      //Serial.println(" - Not valid");
     }
 
   }
@@ -182,7 +182,7 @@ int WiFi_connecter::select_wifi_to_connect(int n)
   if(suggested==-1) {
     if(last_chans==-1)
     {
-        Serial.println("**** NO WIFI TO CONNECT ****");
+        //Serial.println("**** NO WIFI TO CONNECT ****");
     }
     return last_chans;
   }

@@ -20,7 +20,7 @@
 #endif
 
 
-TickerScheduler ts(5);
+TickerScheduler ts(6);
 
 Signals sig;
 
@@ -53,11 +53,10 @@ void com_update()
 {
   com.update();
 }
-/*
 void udp_update()
 {
-//  com.cmds.udp.update();
-} */
+  com.cmds.udp.update();
+}
 #endif
 
 
@@ -86,7 +85,7 @@ void print_info()
 
   Serial.println("");
   String s = "T: " + String(millis()) + "\n";
-  //com.cmds.udp.Out(s);
+  com.cmds.udp.Out(s);
 
 }
 
@@ -119,7 +118,7 @@ void setup()
 
   msg_s.setup();
 
-  //com.cmds.udp.setup();
+  com.cmds.udp.setup();
 
 
   ts.add(0,ota.update_rate,ota_update);
@@ -127,7 +126,7 @@ void setup()
   ts.add(2, msg_s.update_rate,msg_sender_update);
 
   ts.add(4,1000,print_info);
-  //ts.add(5,com.cmds.udp.update_rate,udp_update);
+  ts.add(5,com.cmds.udp.update_rate,udp_update);
 
 
 

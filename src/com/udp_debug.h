@@ -5,7 +5,7 @@
 #include <WiFiUdp.h>
 #define UDP_DEBUG_UPDATE_RATE_MS 100
 
-#define UDP_BUFF_READ_SIZE 10
+#define UDP_BUFF_READ_SIZE 100
 
 class UdpDebug
 {
