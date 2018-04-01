@@ -4,9 +4,9 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
-#include <WiFiUdp.h>
+//#include <WiFiUdp.h>
 #include "sysm/signals.h"
-//#include "com/udp_debug.h"
+#include "com/udp_debug.h"
 
 class tgesp;
 //#include "Params.h"
@@ -52,7 +52,7 @@ public:
     void run_servo_test();
     uint8_t get_id();
 	virtual ~Commands();
-    //UdpDebug udp;
+    UdpDebug udp;
 
 private:
 	//Params pars_params(const char *p);

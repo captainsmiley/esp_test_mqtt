@@ -10,7 +10,7 @@
 #include "sysm/OTA.h"
 #include "app/test_mqtt.h"
 
-//#include "com/udp_debug.h"
+#include "com/udp_debug.h"
 
 #if COMMANDS_ENABLED
 #include "com/tgesp.h"
@@ -53,11 +53,11 @@ void com_update()
 {
   com.update();
 }
-/*
+
 void udp_update()
 {
-//  com.cmds.udp.update();
-} */
+  com.cmds.udp.update();
+}
 #endif
 
 
@@ -119,7 +119,7 @@ void setup()
 
   msg_s.setup();
 
-  //com.cmds.udp.setup();
+  com.cmds.udp.setup();
 
 
   ts.add(0,ota.update_rate,ota_update);
@@ -127,7 +127,7 @@ void setup()
   ts.add(2, msg_s.update_rate,msg_sender_update);
 
   ts.add(4,1000,print_info);
-  //ts.add(5,com.cmds.udp.update_rate,udp_update);
+  ts.add(5,com.cmds.udp.update_rate,udp_update);
 
 
 

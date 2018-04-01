@@ -12,8 +12,8 @@ Commands::Commands(tgesp* e,Signals & s) :
     servo_l_pos(s.get_servo_l_pos()),
 	client_ip(192,168,0,105),
   sig(s),
-	esp(e)
-  //udp(UdpDebug())
+	esp(e),
+  udp(UdpDebug())
 {
 
 }
@@ -38,8 +38,8 @@ void Commands::test_gpio(const char * p)
 
 void Commands::set_udp_client_ip(const char *p)
 {
-  //udp.set_client_ip(p);
-  //udp.Start();
+  udp.set_client_ip(p);
+  udp.Start();
   /*
 	String p_s(p);
 	int index1 = p_s.indexOf('.');

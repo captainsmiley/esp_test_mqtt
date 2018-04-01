@@ -288,8 +288,8 @@ bool WiFi_connecter::sta_in_avoid_list(String & sta) const
   void WiFi_connecter::setup()
   {
 
-    IPAddress local_IP(172,17,sig.get_id(),22);
-    IPAddress gateway(172,17,sig.get_id(),22);
+    IPAddress local_IP(172,100,sig.get_id(),22);
+    IPAddress gateway(172,100,sig.get_id(),22);
     IPAddress subnet(255,255,255,0);
     Serial.println("Wifi connect setup");
     WiFi.mode(WIFI_AP_STA);

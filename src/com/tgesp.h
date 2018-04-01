@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include <WiFiUdp.h>
+//#include <WiFiUdp.h>
 #define SERIAL_BUFF_READ_SIZE 10
 #define TGESP_UPDATE_RATE_MS 100
 
