@@ -20,7 +20,7 @@
 #endif
 
 
-TickerScheduler ts(5);
+TickerScheduler ts(6);
 
 Signals sig;
 
@@ -86,7 +86,7 @@ void print_info()
 
   Serial.println("");
   String s = "T: " + String(millis()) + "\n";
-  //com.cmds.udp.Out(s);
+  com.cmds.udp.Out(s);
 
 }
 

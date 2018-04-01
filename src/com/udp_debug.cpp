@@ -22,10 +22,12 @@ void UdpDebug::setup()
 void UdpDebug::Start()
 {
   udp.begin(localPort);
+  Serial.println("udp begin");
 }
 void UdpDebug::send_udp()
 {
   if (udp_buff_pos == 0) return;
+  //Serial.println("Send udp");
 	 udp.beginPacket(client_ip, 11000);
 	 udp.write(udp_buff,udp_buff_pos);
 	 udp.endPacket();
