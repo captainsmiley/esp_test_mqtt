@@ -41,7 +41,10 @@ public:
     void connect(const char *p);
     void set_id(const char *p);
     void set_main_sta(const char *p);
+    void set_main_sta_pass(const char *p);
+    void set_no_msg_timeout_reconnect(const char *p);
     void get_main_sta();
+    void get_main_sta_pass();
     void set_try_sta(const char *p);
     void get_try_sta();
     void get_servo_delay();

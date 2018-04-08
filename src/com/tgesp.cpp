@@ -240,6 +240,26 @@ void tgesp::handle_command(const char * input)
            if (serial_dbg) {Serial.print("Runs set_main_sta("); Serial.print(parameter); Serial.print(")\n"); }
            cmds.set_main_sta(parameter);
        }
+       if ((parameter = cmp_input(input,"set_main_sta_pass")))
+       {
+           if (serial_dbg) {Serial.print("Runs set_main_sta_pass("); Serial.print(parameter); Serial.print(")\n"); }
+           cmds.set_main_sta_pass(parameter);
+       }
+       if (cmp_input(input,"get_main_sta"))
+       {
+         if (serial_dbg) Serial.println("Runs get_main_sta()");
+         cmds.get_main_sta();
+       }
+       if (cmp_input(input,"get_main_sta_pass"))
+       {
+         if (serial_dbg) Serial.println("Runs get_main_sta_pass()");
+         cmds.get_main_sta_pass();
+       }
+       if ((parameter = cmp_input(input,"set_no_msg_timeout_reconnect")))
+       {
+           if (serial_dbg) {Serial.print("Runs set_no_msg_timeout_reconnect("); Serial.print(parameter); Serial.print(")\n"); }
+           cmds.set_no_msg_timeout_reconnect(parameter);
+       }
        if (cmp_input(input,"get_main_sta"))
        {
          if (serial_dbg) Serial.println("Runs get_main_sta()");

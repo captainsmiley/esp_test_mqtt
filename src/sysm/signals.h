@@ -10,13 +10,17 @@
 #define ID_ADDR 0x04
 #define MAIN_STA_ADDR 0x05
 #define MAIN_STA_MAX_LEN 30
-#define MAIN_STA_LEN_ADDR 0x36
-#define TRY_STA_ADDR 0x37
+#define MAIN_STA_LEN_ADDR 0x1F
+#define TRY_STA_ADDR 0x20
 #define TRY_STA_MAX_LEN 20
-#define TRY_STA_LEN_ADDR 0x58
-#define SELF_STA_ADDR 0x59
+#define TRY_STA_LEN_ADDR 0x35
+#define SELF_STA_ADDR 0x36
 #define SELF_STA_MAX_LEN 20
-#define SELF_STA_LEN_ADDR 0x80
+#define SELF_STA_LEN_ADDR 0x4B
+#define MAIN_STA_PASS_ADDR 0x4C
+#define MAIN_STA_PASS_MAX_LEN 20
+#define MAIN_STA_PASS_LEN_ADDR 0x61
+#define CONF1_ADDR 0x62
 
 class Signals
 {
@@ -49,13 +53,22 @@ public:
   String get_main_sta() const;
   void set_main_sta(String & s);
 
+  String get_main_sta_pass() const;
+  void set_main_sta_pass(String & s);
+
   String get_try_sta() const;
   void set_try_sta(String & s);
 
   String get_self_sta() const;
   void set_self_sta(String & s);
 
+  bool get_no_msg_timeout_reconnect() const;
+  void set_no_msg_timeout_reconnect(bool);
+
 private:
+  enum CONF1 {NO_MSG_TIMEOUT_RECONNECT};
+  void set_conf1_bit(CONF1 pos, bool value);
+  bool get_conf1_bit(CONF1 pos) const;
   bool msg_updated;
   String msg;
   unsigned long msg_update_time;

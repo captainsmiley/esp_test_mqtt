@@ -7,5 +7,5 @@ print env.Dump()
 
 
 
-env.Replace(UPLOAD_PORT="172.100.78.22")
+env.Replace(UPLOAD_PORT="192.168.0.184")
 #env.Replace(UPLOAD_PORT="COM6")

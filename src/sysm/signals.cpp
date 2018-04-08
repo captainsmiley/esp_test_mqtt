@@ -5,7 +5,7 @@ msg(""),
 msg_updated(false),
 msg_update_time(millis())
 {
-  EEPROM.begin(128);
+  EEPROM.begin(256);
 }
 
 Signals::~Signals(){}
@@ -67,6 +67,67 @@ String Signals::get_main_sta() const
   for(int i=0;i<n;++i)
   {
     s+= char(EEPROM.read(i+MAIN_STA_ADDR));
+  }
+  return s;
+}
+
+void Signals::set_no_msg_timeout_reconnect(bool b)
+{
+  CONF1 conf = NO_MSG_TIMEOUT_RECONNECT;
+  set_conf1_bit(conf,b);
+}
+bool Signals::get_no_msg_timeout_reconnect() const
+{
+  CONF1 conf = NO_MSG_TIMEOUT_RECONNECT;
+  return get_conf1_bit(conf);
+}
+void Signals::set_conf1_bit(CONF1 pos, bool value)
+{
+  uint8_t tmp = EEPROM.read(CONF1_ADDR);
+  if(value)
+  {
+    tmp |= (1<<pos);
+
+  }else {
+    tmp &= ~(1<<pos);
+  }
+  EEPROM.write(CONF1_ADDR,tmp);
+  EEPROM.commit();
+}
+bool Signals::get_conf1_bit(CONF1 pos) const
+{
+  uint8_t tmp = EEPROM.read(CONF1_ADDR);
+  return tmp & (1<<pos);
+
+}
+
+
+void Signals::set_main_sta_pass(String &s)
+{
+  Serial.println("writes main sta pass: "+s);
+  if(s.length() > MAIN_STA_PASS_MAX_LEN) return;
+  for(int i=0;i<s.length();i++)
+  {
+    EEPROM.write(i+MAIN_STA_PASS_ADDR,s[i]);
+  }
+  EEPROM.write(MAIN_STA_PASS_LEN_ADDR,s.length());
+  EEPROM.commit();
+
+}
+
+
+String Signals::get_main_sta_pass() const
+{
+  String s = "";
+  int n =EEPROM.read(MAIN_STA_PASS_LEN_ADDR);
+  if(n>MAIN_STA_PASS_MAX_LEN)
+  {
+    n = MAIN_STA_PASS_MAX_LEN;
+  }
+  Serial.println("read len: "+String(n));
+  for(int i=0;i<n;++i)
+  {
+    s+= char(EEPROM.read(i+MAIN_STA_PASS_ADDR));
   }
   return s;
 }

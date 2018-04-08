@@ -89,8 +89,9 @@ void WiFi_connecter::find_sta_and_connect()
       if(connect_to >= 0)
       {
         WiFi.disconnect();
-        WiFi.begin(WiFi.SSID(connect_to).c_str(), MAIN_STA_PW);
+        WiFi.begin(WiFi.SSID(connect_to).c_str(), sig.get_main_sta_pass().c_str());
         Serial.print("Try to connect to ");Serial.print(WiFi.SSID(connect_to).c_str());
+        Serial.print(sig.get_main_sta_pass().c_str());
         uint8_t times = 0;
         while(WiFi.status() != WL_CONNECTED)
         {
@@ -225,7 +226,9 @@ bool WiFi_connecter::sta_in_avoid_list(String & sta) const
         //find_sta_and_connect();
         break;
       }
-      if((sig.TimeSinceMsgUpdate() > 10000) && (TimeSinceLastConnect() > 10000))
+      if(sig.get_no_msg_timeout_reconnect() &&
+      (sig.TimeSinceMsgUpdate() > 10000) &&
+      (TimeSinceLastConnect() > 10000))
       {
         Serial.println("**** No msg timeout look for new connection *****");
         main_state=NEW_SEARCH;

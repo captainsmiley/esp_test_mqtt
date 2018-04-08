@@ -196,15 +196,29 @@ void Commands::set_main_sta(const char *p)
     String p_s(p);
     sig.set_main_sta(p_s);
 }
+void Commands::set_main_sta_pass(const char *p)
+{
+    String p_s(p);
+    sig.set_main_sta_pass(p_s);
+}
 
 void Commands::get_main_sta()
 {
   esp->output(String("Main sta: "+ sig.get_main_sta()).c_str());
 }
+void Commands::get_main_sta_pass()
+{
+  esp->output(String("Main sta pass: "+ sig.get_main_sta_pass()).c_str());
+}
 void Commands::set_try_sta(const char *p)
 {
     String p_s(p);
     sig.set_try_sta(p_s);
+}
+void Commands::set_no_msg_timeout_reconnect(const char *p)
+{
+    String p_s(p);
+    sig.set_no_msg_timeout_reconnect(p_s.toInt());
 }
 
 void Commands::get_try_sta()
