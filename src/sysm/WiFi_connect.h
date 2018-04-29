@@ -48,6 +48,7 @@ public:
     void print_wl_status();
     void find_clients();
     void check_OTA();
+    bool main_sta_on_flash;
     bool sta_in_avoid_list(String &s) const;
      const char* ap_ssid;
      const char* ap_password;

@@ -14,6 +14,19 @@ Signals::~Signals(){}
 void Signals::setup()
 {
   Serial.println("Setup signals");
+  override_values();
+}
+
+void Signals::override_values()
+{
+  set_no_msg_timeout_reconnect(false);
+  set_main_sta_on_flash(false);
+  set_id(99);
+  set_servo_delay(100);
+  String sta = "TeliaGateway9C-97-26-49-11-55";
+  set_main_sta(sta);
+  String pass = "179A1021DD";
+  set_main_sta_pass(pass);
 
 }
 
@@ -79,6 +92,16 @@ void Signals::set_no_msg_timeout_reconnect(bool b)
 bool Signals::get_no_msg_timeout_reconnect() const
 {
   CONF1 conf = NO_MSG_TIMEOUT_RECONNECT;
+  return get_conf1_bit(conf);
+}
+void Signals::set_main_sta_on_flash(bool b)
+{
+  CONF1 conf = MAIN_STA_ON_FLASH;
+  set_conf1_bit(conf,b);
+}
+bool Signals::get_main_sta_on_flash() const
+{
+  CONF1 conf = MAIN_STA_ON_FLASH;
   return get_conf1_bit(conf);
 }
 void Signals::set_conf1_bit(CONF1 pos, bool value)

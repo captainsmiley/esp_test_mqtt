@@ -105,6 +105,7 @@ void setup()
   Serial.println("Start of main");
 
   // Setup components
+  sig.setup();
   ota.setup();
   wc.setup();
   #if MQTT_ENABLED

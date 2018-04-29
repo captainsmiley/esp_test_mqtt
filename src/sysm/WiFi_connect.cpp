@@ -17,6 +17,9 @@ static char password_st_s[] = "65635032";
 const char* ssid_x = "TN_24GHz_C587A5";
 const char* password_x = "68E84C8ED7";
 
+// hack wifi
+const char* ssid_flash = "Hacknet2";
+const char* password_flash = "connectme";
 
 
 
@@ -31,6 +34,7 @@ try_out_wifi_string(sig.get_try_sta()),
 connect_time(0),
 scan_time(20000),
 main_state(NEW_SEARCH),
+main_sta_on_flash(sig.get_main_sta_on_flash()),
 avoid_pos(0)
 {
 
@@ -40,10 +44,6 @@ WiFi_connecter::~WiFi_connecter()
 
 }
 
-void scanDone(int n)
-{
-
-}
 
 void WiFi_connecter::find_sta_and_connect()
 {
@@ -136,18 +136,18 @@ int WiFi_connecter::select_wifi_to_connect(int n)
   {
     String sta =WiFi.SSID(i);
 
-    //Serial.print(sta);
+    Serial.print(sta);
     // Is it the prefered_wifi select it directly
     if (sta == prefered_wifi)
     {
       if (!sta_in_avoid_list(sta))
       {
-        //Serial.println(" Selected!");
+        Serial.println(" Selected!");
         return i;
       }
       else
       {
-        //Serial.println(" - In avoid list");
+        Serial.println(" - In avoid list");
         last_chans = i;
       }
     }
@@ -159,18 +159,18 @@ int WiFi_connecter::select_wifi_to_connect(int n)
       {
         if (!sta_in_avoid_list(sta))
         {
-          //Serial.println(" - Suggested!");
+          Serial.println(" - Suggested!");
           suggested = i;
         }
         else
         {
-          //Serial.println(" - In avoid list");
+          Serial.println(" - In avoid list");
           last_chans = i;
         }
       }
       else
       {
-        //Serial.println(" - Not valid");
+        Serial.println(" - Not valid");
       }
     }
     else
@@ -270,7 +270,14 @@ bool WiFi_connecter::sta_in_avoid_list(String & sta) const
 
   void WiFi_connecter::connect_to_main_sta()
   {
+
+    if(sig.get_main_sta_on_flash())
+    {
+      WiFi.begin(ssid_flash, password_flash);
+    }
+    else {
     WiFi.begin(MAIN_STA, MAIN_STA_PW);
+    }
 
 
     delay(1000);
@@ -290,7 +297,6 @@ bool WiFi_connecter::sta_in_avoid_list(String & sta) const
   }
   void WiFi_connecter::setup()
   {
-
     IPAddress local_IP(172,100,sig.get_id(),22);
     IPAddress gateway(172,100,sig.get_id(),22);
     IPAddress subnet(255,255,255,0);
@@ -301,12 +307,21 @@ bool WiFi_connecter::sta_in_avoid_list(String & sta) const
     String ssid_string = String(ssid_ap)+String(sig.get_id());
     WiFi.softAP(ssid_string.c_str(),password_ap);
     //connect_to_main_sta();
-
+    if(main_sta_on_flash)
+    {
+      connect_to_main_sta();
+    }
+    else {
     find_sta_and_connect();
+    }
   }
 
   void WiFi_connecter::update()
   {
+    if(main_sta_on_flash)
+    {
+      return;
+    }
     switch(main_state)
     {
       case NEW_SEARCH:

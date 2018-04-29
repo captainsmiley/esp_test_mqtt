@@ -30,6 +30,8 @@ public:
   const static uint8_t update_rate = SIGNALS_UPDATE_RATE_MS;
   void setup();
 
+  void override_values();
+
   void set_id(uint8_t);
   uint8_t get_id() const;
 
@@ -64,9 +66,14 @@ public:
 
   bool get_no_msg_timeout_reconnect() const;
   void set_no_msg_timeout_reconnect(bool);
+  bool get_main_sta_on_flash() const;
+  void set_main_sta_on_flash(bool);
 
 private:
-  enum CONF1 {NO_MSG_TIMEOUT_RECONNECT};
+  enum CONF1 {
+    NO_MSG_TIMEOUT_RECONNECT,
+    MAIN_STA_ON_FLASH,
+  };
   void set_conf1_bit(CONF1 pos, bool value);
   bool get_conf1_bit(CONF1 pos) const;
   bool msg_updated;
