@@ -175,7 +175,7 @@ int WiFi_connecter::select_wifi_to_connect(int n)
     }
     else
     {
-      //Serial.println(" - Not valid");
+      Serial.println(" - Not valid");
     }
 
   }

@@ -14,7 +14,7 @@ Signals::~Signals(){}
 void Signals::setup()
 {
   Serial.println("Setup signals");
-  override_values();
+  //override_values();
 }
 
 void Signals::override_values()
@@ -23,9 +23,11 @@ void Signals::override_values()
   set_main_sta_on_flash(false);
   set_id(99);
   set_servo_delay(100);
-  String sta = "TeliaGateway9C-97-26-49-11-55";
+  //String sta = "TeliaGateway9C-97-26-49-11-55";
+  //String pass = "179A1021DD";
+  String sta = "Wifi_ToV";
+  String pass = "65635032";
   set_main_sta(sta);
-  String pass = "179A1021DD";
   set_main_sta_pass(pass);
 
 }
