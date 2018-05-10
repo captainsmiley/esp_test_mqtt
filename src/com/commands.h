@@ -8,7 +8,7 @@
 #include "sysm/signals.h"
 #include "com/udp_debug.h"
 
-class tgesp;
+class TcpServer;
 //#include "Params.h"
 
 #define SERVO_H_POS 100
@@ -21,7 +21,7 @@ class tgesp;
 class Commands {
 public:
     static Servo sv;
-	Commands(tgesp *,Signals &sig);
+	Commands(TcpServer *,Signals &sig);
     static void test_gpio(const char * p);
 
     static void http_get();
@@ -55,7 +55,7 @@ public:
     void run_servo_test();
     uint8_t get_id();
 	virtual ~Commands();
-    UdpDebug udp;
+    //UdpDebug udp;
 
 private:
 	//Params pars_params(const char *p);
@@ -63,7 +63,7 @@ private:
 	IPAddress client_ip;
     uint8_t servo_h_pos;
     uint8_t servo_l_pos;
-    tgesp *esp;
+    TcpServer *esp;
     Signals &sig;
 
 };

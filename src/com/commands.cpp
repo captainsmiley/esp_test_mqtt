@@ -3,17 +3,18 @@
 #include "com/commands.h"
 #include <Servo.h>
 #include <WiFiUdp.h>
-#include "com/tgesp.h"
+#include "com/tcp_server.h"
+#include "esp_test.h"
 
 
 
-Commands::Commands(tgesp* e,Signals & s) :
+Commands::Commands(TcpServer* e,Signals & s) :
     servo_h_pos(s.get_servo_h_pos()),
     servo_l_pos(s.get_servo_l_pos()),
 	client_ip(192,168,0,105),
   sig(s),
-	esp(e),
-  udp(UdpDebug())
+	esp(e)
+  //udp(UdpDebug())
 {
 
 }
@@ -74,7 +75,7 @@ void Commands::wifi_setup(const char *p)
 
 	if(ap=="ap")
 	{
-	esp->createAP();
+	//esp->createAP();
 	return;
 	}
 	else
@@ -84,11 +85,12 @@ void Commands::wifi_setup(const char *p)
 		ap.toCharArray(b1,30,0);
 		p_s.substring(index1+1).toCharArray(b2,30,0);
 		Serial.print(b1);Serial.println(b2);
-		if (!esp->connectToWifi(b1,b2))
+    /*
+		if (!esp->connecttowifi(b1,b2))
 		{
-			Serial.println("warning, no connection");
-			esp->createAP();
-		}
+			serial.println("warning, no connection");
+			esp->createap();
+		} */
 	}
 
 }

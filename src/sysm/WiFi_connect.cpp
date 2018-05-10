@@ -98,7 +98,7 @@ void WiFi_connecter::find_sta_and_connect()
           times++;
           delay(500);
           Serial.print(".");
-          if(times>10)
+          if(times>50)
           {
             Serial.println("Failed");
             main_state = NEW_SEARCH;

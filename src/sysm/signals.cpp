@@ -1,4 +1,5 @@
 #include "sysm/signals.h"
+#include "esp_test.h"
 #include <ESP8266WiFi.h>
 Signals::Signals() :
 msg(""),
@@ -30,6 +31,13 @@ void Signals::override_values()
   set_main_sta(sta);
   set_main_sta_pass(pass);
 
+}
+
+String Signals::getJsonSignals() const{
+  return String("{") +
+  "\"id\":" + get_id() + "," +
+  "\"Time\":" + millis() +
+  "}";
 }
 
 void Signals::set_id(uint8_t id)

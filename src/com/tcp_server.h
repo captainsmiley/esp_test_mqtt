@@ -13,33 +13,32 @@
 //#include <WiFiUdp.h>
 #define SERIAL_BUFF_READ_SIZE 10
 #define TGESP_UPDATE_RATE_MS 100
+#define NR_OF_COMMANDS 2
 
 #include "com/commands.h"
 #include "sysm/signals.h"
+#include "com/command.h"
 //class Commands;
 
-class tgesp {
+class TcpServer {
 public:
-	tgesp(Signals & sig);
-	void scanWifi();
+	TcpServer(Signals & sig, Command **commands, uint16_t nr_of_commands);
 	void setup();
 	void update();
 	void debugg();
 	void stop();
-	void createAP();
-	void connectToWifi();
 	const static uint8_t update_rate = TGESP_UPDATE_RATE_MS;
-	bool connectToWifi(const char * ssid, const char * pass);
     void read_client(WiFiClient & client);
     void listen_for_clients();
     void handle_command(const char *);
+		void new_handle_command(const char *);
     void handle_get(String &);
     void readSerial();
     void send_udp();
     void read_udp();
     void handle_http_request(String &);
     const char * cmp_input(const char * input, const char * cmp);
-	virtual ~tgesp();
+	virtual ~TcpServer();
     Commands cmds;
     void output(const char *);
 private:
@@ -53,12 +52,15 @@ unsigned long int TimeSinceClientConnect();
     static char serial_buff[];
     static size_t serial_buff_pos;
     WiFiServer server;
-    WiFiUDP udp;
     bool client_connected;
     WiFiClient connected_client;
     String response_content;
     bool serial_dbg;
     static char packetBuffer[];
+		Command ** c_a;
+		uint16_t nr_of_c;
+
+
 };
 
 #endif /* SRC_TGESP_H_ */

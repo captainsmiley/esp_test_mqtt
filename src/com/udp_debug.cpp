@@ -1,6 +1,10 @@
 
 #include "com/udp_debug.h"
 #include <ESP8266WiFi.h>
+
+
+UdpDebug udp;
+
 UdpDebug::UdpDebug() :
 udp(WiFiUDP()),
 localPort(11000),
@@ -11,6 +15,7 @@ UdpDebug::~UdpDebug(){}
 
 void UdpDebug::update()
 {
+
   send_udp();
 }
 
@@ -36,7 +41,13 @@ void UdpDebug::send_udp()
 
 //char UdpDebug::serial_buff[UDP_BUFF_READ_SIZE];
 //size_t tgesp::serial_buff_pos = 0;
-bool UdpDebug::Out(String & s)
+
+bool UdpDebug::out(const char * s)
+{
+  String tmp(s);
+  return out(tmp);
+}
+bool UdpDebug::out(String & s)
 {
   for(int i=0;i<s.length();i++)
   {

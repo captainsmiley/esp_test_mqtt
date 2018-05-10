@@ -3,7 +3,9 @@
 #define APP_UDP_DEBUG_TTG
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#define UDP_DEBUG_UPDATE_RATE_MS 100
+#include "sysm/signals.h"
+//#include "com/command.h"
+#define UDP_DEBUG_UPDATE_RATE_MS 50
 
 #define UDP_BUFF_READ_SIZE 100
 
@@ -13,12 +15,14 @@ public:
   UdpDebug();
   virtual ~UdpDebug();
 
-  const static uint8_t update_rate = UDP_DEBUG_UPDATE_RATE_MS;
+  const static uint16_t update_rate = UDP_DEBUG_UPDATE_RATE_MS;
   void update();
   void setup();
   void Start();
-  bool Out(String & s);
+  bool out(String & s);
+  bool out(const char* s);
   void set_client_ip(const char *p);
+
 
 private:
   char udp_buff[UDP_BUFF_READ_SIZE];
@@ -33,6 +37,8 @@ private:
 
 
 };
+
+extern UdpDebug udp;
 
 
 #endif

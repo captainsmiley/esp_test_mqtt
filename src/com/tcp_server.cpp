@@ -1,35 +1,46 @@
 /*
- * tgesp.cpp
+ * TcpServer.cpp
  *
  *  Created on: Sep 12, 2016
  *      Author: captainsmiley
  */
 
-#include "com/tgesp.h"
+#include "com/tcp_server.h"
 #include "com/commands.h"
+#include "com/udp_debug.h"
 //#include "../lib/StandardCplusplus/StandardCplusplus.h"
 //include "../lib/StandardCplusplus/vector"
 //#include <vector>
 
-char tgesp::serial_buff[SERIAL_BUFF_READ_SIZE];
-size_t tgesp::serial_buff_pos = 0;
+char TcpServer::serial_buff[SERIAL_BUFF_READ_SIZE];
+size_t TcpServer::serial_buff_pos = 0;
 
-tgesp::tgesp(Signals & s) : server(80),
+void tgtest()
+{
+
+  udp.out("tgtest");
+}
+
+TcpServer::TcpServer(Signals & s, Command ** cs, uint16_t nr_of_commands) : server(80),
     client_connected(false),
 	serial_dbg(true),
     cmds(this,s),
     server_state(WAITING),
-    sig(s)
+    sig(s),
+    c_a(cs),
+    nr_of_c(nr_of_commands)
 {
+
+
 }
 
-void tgesp::setup()
+void TcpServer::setup()
 {
-  Serial.println("Setup tgesp");
+  Serial.println("Setup TcpServer");
     server.begin();
 }
 
-void tgesp::update()
+void TcpServer::update()
 {
   switch(server_state)
   {
@@ -48,17 +59,17 @@ void tgesp::update()
   }
 }
 
-void tgesp::debugg()
+void TcpServer::debugg()
 {
   Serial.print("id: ");Serial.print(cmds.get_id());
 }
 
-void tgesp::stop()
+void TcpServer::stop()
 {
 	server.stop();
 }
 
-void tgesp::listen_for_clients()
+void TcpServer::listen_for_clients()
 {
     WiFiClient client = server.available();
     if (client) {
@@ -75,33 +86,33 @@ void tgesp::listen_for_clients()
     }
 }
 
-void tgesp::send_udp()
+void TcpServer::send_udp()
 {
 	//Serial.print("s udp");
 	//*(serial_buff+serial_buff_pos)= '\0';
-	cmds.send_udp(serial_buff,serial_buff_pos,udp);
+	//cmds.send_udp(serial_buff,serial_buff_pos,udp);
 
-	serial_buff_pos = 0;
+	//serial_buff_pos = 0;
 }
 
-char tgesp::packetBuffer[255]= {};
-void tgesp::read_udp()
+char TcpServer::packetBuffer[255]= {};
+void TcpServer::read_udp()
 {
 	//Serial.print("r udp");
 	// if there's data available, read a packet
-	  int packetSize = udp.parsePacket();
-	  if (packetSize) {
+	  //int packetSize = udp.parsePacket();
+	  //if (packetSize) {
 
 	    // read the packet into packetBufffer
-	    int len = udp.read(packetBuffer, 255);
-	    if (len > 0) {
-	      packetBuffer[len] = 0;
-	      Serial.print(packetBuffer);
-	    }
-	  }
+	   // int len = udp.read(packetBuffer, 255);
+	   // if (len > 0) {
+	    //  packetBuffer[len] = 0;
+	    //  Serial.print(packetBuffer);
+	   // }
+	 // }
 }
 
-void tgesp::readSerial()
+void TcpServer::readSerial()
 {
 	while (Serial.available() > 0 )
 	{
@@ -111,41 +122,8 @@ void tgesp::readSerial()
 	}
 }
 
-void tgesp::scanWifi() {
-    // scan for nearby networks:
-    if (serial_dbg) Serial.println("** Scan Networks **");
-    byte numSsid = WiFi.scanNetworks();
 
-    // print the list of networks seen:
-    if (serial_dbg) Serial.print("SSID List:");
-    if (serial_dbg) Serial.println(numSsid);
-    // print the network number and name for each network found:
-    for (int thisNet = 0; thisNet<numSsid; thisNet++) {
-        if (serial_dbg) Serial.print(thisNet);
-        if (serial_dbg) Serial.print(") Network: ");
-        if (serial_dbg) Serial.println(WiFi.SSID(thisNet));
-    }
-
-}
-
-void tgesp::connectToWifi()
-{
-}
-
-
-
-
-void tgesp::createAP()
-{
-
-}
-
-bool tgesp::connectToWifi(const char * ssid_p, const char * pass_p)
-  {
-
- }
-
-const char * tgesp::cmp_input(const char * input, const char * cmp)
+const char * TcpServer::cmp_input(const char * input, const char * cmp)
 {
     if (*cmp == '\0') {
         if (*input == '\0') return input;
@@ -158,9 +136,20 @@ const char * tgesp::cmp_input(const char * input, const char * cmp)
     return nullptr;
 }
 
-void tgesp::handle_command(const char * input)
+
+void TcpServer::new_handle_command(const char * input)
+{
+  if(cmp_input(input, c_a[0]->m_name.c_str()))
+  {
+    c_a[0]->run(connected_client);
+  }
+
+}
+
+void TcpServer::handle_command(const char * input)
 {
     output("<p>handling command: "); output(input); output("</p>");
+    new_handle_command(input);
 
        const char * parameter;
 
@@ -219,7 +208,7 @@ void tgesp::handle_command(const char * input)
        }
        if ((parameter = cmp_input(input,"connect_to_ssid")))
        {
-    	   connectToWifi(parameter,"50044801");
+    //	   connectToWifi(parameter,"50044801");
        }
        if ((parameter = cmp_input(input,"wifi_setup")))
        {
@@ -298,7 +287,7 @@ void tgesp::handle_command(const char * input)
 
 }
 
-void tgesp::output(const char * out_put)
+void TcpServer::output(const char * out_put)
 {
     if (serial_dbg) Serial.print(out_put);
     if (client_connected)
@@ -307,12 +296,12 @@ void tgesp::output(const char * out_put)
     }
 }
 
-void tgesp::handle_get(String & cm)
+void TcpServer::handle_get(String & cm)
 {
     handle_command(cm.substring(1).c_str());
 }
 
-void tgesp::handle_http_request(String & rq)
+void TcpServer::handle_http_request(String & rq)
 {
     if (rq.substring(0,3) == "GET")
     {
@@ -326,7 +315,7 @@ void tgesp::handle_http_request(String & rq)
 }
 
 
-void tgesp::read_client(WiFiClient & client)
+void TcpServer::read_client(WiFiClient & client)
 {
     boolean currentLineIsBlank = true;
     //std::vector<String> lines = {};
@@ -375,12 +364,12 @@ void tgesp::read_client(WiFiClient & client)
     }
 }
 
-unsigned long int tgesp::TimeSinceClientConnect()
+unsigned long int TcpServer::TimeSinceClientConnect()
 {
   return  millis() - client_connect_time;
 }
 
-void tgesp::send_response()
+void TcpServer::send_response()
 {
   //Serial.println("sending response");
     // send a standard http response header
@@ -394,5 +383,5 @@ void tgesp::send_response()
     connected_client.print(response_content);
 }
 
-tgesp::~tgesp() {
+TcpServer::~TcpServer() {
 }

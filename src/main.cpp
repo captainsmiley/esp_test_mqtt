@@ -13,7 +13,7 @@
 #include "com/udp_debug.h"
 
 #if COMMANDS_ENABLED
-#include "com/tgesp.h"
+#include "com/tcp_server.h"
 #endif
 #if MQTT_ENABLED
 #include "sysm/mqtt.h"
@@ -23,6 +23,8 @@
 TickerScheduler ts(6);
 
 Signals sig;
+
+//UdpDebug udp;
 
 WiFi_connecter wc(sig);
 void wifi_con_update()
@@ -47,7 +49,33 @@ void mqtt_update()
 #endif
 
 #if COMMANDS_ENABLED
-tgesp com(sig);
+
+Command c1;
+Command c2;
+
+Command * commands1[] =
+{
+  &c1,
+  &c2
+};
+
+
+Command c3;
+Command c4;
+
+Command * commands2[] =
+{
+  &c3,
+  &c4
+};
+
+Command * tot[] =
+{
+  commands1,
+  commands2,
+};
+
+TcpServer com(sig,commands, 2);
 
 void com_update()
 {
@@ -56,7 +84,8 @@ void com_update()
 
 void udp_update()
 {
-  com.cmds.udp.update();
+  udp.update();
+  //com.cmds.udp.update();
 }
 #endif
 
@@ -78,15 +107,26 @@ int loop_counter = 0;
 
 void print_info()
 {
+
+
+  Serial.println("");
+  String t = String(millis());
+  String s = "T: " + t + " V:"+TG_VERSION + " | Free flash: " + ESP.getFreeSketchSpace() +
+  " | Free heap:" + ESP.getFreeHeap() + "\n";
+  //udp.out(s);
+
   Serial.print("T:");Serial.print(millis());Serial.print(" V:");Serial.print(TG_VERSION);
   Serial.print("| ");wc.debugg();
   Serial.print("| ");com.debugg();
   Serial.print("| Free flash:");Serial.print(ESP.getFreeSketchSpace());
   Serial.print(" Free heap:");Serial.print(ESP.getFreeHeap());
 
-  Serial.println("");
-  String s = "T: " + String(millis()) + "\n";
-  com.cmds.udp.Out(s);
+  String s_var = "{ \"Time\" : " +t+"}";
+  udp.out(s_var);
+  String tmp =sig.getJsonSignals() ;
+  udp.out(tmp);
+
+
 
 }
 
@@ -120,15 +160,15 @@ void setup()
 
   msg_s.setup();
 
-  com.cmds.udp.setup();
+  udp.setup();
 
 
   ts.add(0,ota.update_rate,ota_update);
-  ts.add(1, wc.update_rate,wifi_con_update);
-  ts.add(2, msg_s.update_rate,msg_sender_update);
+  ts.add(4, wc.update_rate,wifi_con_update);
+  ts.add(5, msg_s.update_rate,msg_sender_update);
 
-  ts.add(4,1000,print_info);
-  ts.add(5,com.cmds.udp.update_rate,udp_update);
+  ts.add(1,1000,print_info);
+  ts.add(2,udp.update_rate,udp_update);
 
 
 

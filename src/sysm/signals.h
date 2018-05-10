@@ -26,6 +26,7 @@ class Signals
 {
 public:
   Signals();
+  String getJsonSignals()const;
   virtual ~Signals();
   const static uint8_t update_rate = SIGNALS_UPDATE_RATE_MS;
   void setup();
