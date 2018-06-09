@@ -16,7 +16,7 @@ void MsgSender::update()
   readSerial();
   if (sig.MsgUpdated())
   {
-    com->send_info_to_clients(sig.get_msg().c_str());
+    //com->send_info_to_clients(sig.get_msg().c_str());
     sig.outdate_msg();
   }
 }

@@ -9,6 +9,7 @@
 #include "sysm/signals.h"
 #include "sysm/OTA.h"
 #include "app/test_mqtt.h"
+#include "com/commands.h"
 
 #include "com/udp_debug.h"
 
@@ -24,7 +25,6 @@ TickerScheduler ts(6);
 
 Signals sig;
 
-//UdpDebug udp;
 
 WiFi_connecter wc(sig);
 void wifi_con_update()
@@ -34,11 +34,7 @@ void wifi_con_update()
 OTA ota;
 void ota_update()
 {
-  //Serial.println("dis all");
-  //ts.disableAll();
   ota.update();
-  //Serial.println("enable all");
-  //ts.enableAll();
 }
 #if MQTT_ENABLED
 Mqtt_manager mqttm;
@@ -53,29 +49,8 @@ void mqtt_update()
 Command c1;
 Command c2;
 
-Command * commands1[] =
-{
-  &c1,
-  &c2
-};
 
-
-Command c3;
-Command c4;
-
-Command * commands2[] =
-{
-  &c3,
-  &c4
-};
-
-Command * tot[] =
-{
-  commands1,
-  commands2,
-};
-
-TcpServer com(sig,commands, 2);
+TcpServer com(sig);
 
 void com_update()
 {
@@ -91,10 +66,10 @@ void udp_update()
 
 
 #include "app/msg_sender.h"
-MsgSender msg_s(&(com.cmds),sig);
+//MsgSender msg_s(&(com.cmds),sig);
 void msg_sender_update()
 {
-  msg_s.update();
+//  msg_s.update();
 }
 
 
@@ -123,8 +98,8 @@ void print_info()
 
   String s_var = "{ \"Time\" : " +t+"}";
   udp.out(s_var);
-  String tmp =sig.getJsonSignals() ;
-  udp.out(tmp);
+  //String tmp =sig.getJsonSignals() ;
+  //udp.out(tmp);
 
 
 
@@ -158,14 +133,14 @@ void setup()
   #endif
 
 
-  msg_s.setup();
+  //msg_s.setup();
 
   udp.setup();
 
 
   ts.add(0,ota.update_rate,ota_update);
   ts.add(4, wc.update_rate,wifi_con_update);
-  ts.add(5, msg_s.update_rate,msg_sender_update);
+  //ts.add(5, msg_s.update_rate,msg_sender_update);
 
   ts.add(1,1000,print_info);
   ts.add(2,udp.update_rate,udp_update);

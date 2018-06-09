@@ -1,15 +1,29 @@
 
 #include "com/udp_debug.h"
 #include <ESP8266WiFi.h>
+#include "com/commands.h"
 
 
 UdpDebug udp;
+
+
+
+void start_udp(WiFiClient & c, const char * p)
+{
+  udp.set_client_ip(c.remoteIP());
+  udp.Start();
+}
+Command c_udp = Command("start_udp",start_udp);
+//commands.add(c_udp);
+
 
 UdpDebug::UdpDebug() :
 udp(WiFiUDP()),
 localPort(11000),
 udp_buff_pos(0)
-{}
+{
+  commands.add(&c_udp);
+}
 
 UdpDebug::~UdpDebug(){}
 
@@ -85,7 +99,10 @@ void tgesp::read_udp()
 	    }
 	  }
 }*/
-
+void UdpDebug::set_client_ip(IPAddress ip)
+{
+  client_ip = ip;
+}
 void UdpDebug::set_client_ip(const char *p)
 {
 	String p_s(p);

@@ -22,7 +22,7 @@
 
 class TcpServer {
 public:
-	TcpServer(Signals & sig, Command **commands, uint16_t nr_of_commands);
+	TcpServer(Signals & sig);
 	void setup();
 	void update();
 	void debugg();
@@ -36,12 +36,13 @@ public:
     void readSerial();
     void send_udp();
     void read_udp();
-    void handle_http_request(String &);
+    void handle_http_request();
     const char * cmp_input(const char * input, const char * cmp);
 	virtual ~TcpServer();
-    Commands cmds;
     void output(const char *);
 private:
+	void handle_post();
+	void ParsBody();
 
 unsigned long int TimeSinceClientConnect();
 	unsigned long int client_connect_time;
@@ -57,8 +58,15 @@ unsigned long int TimeSinceClientConnect();
     String response_content;
     bool serial_dbg;
     static char packetBuffer[];
-		Command ** c_a;
-		uint16_t nr_of_c;
+
+		Command test_command;
+
+		String lines[20];
+		String line;
+		uint8_t nr_of_lines;
+		String lines_body[20];
+		String body;
+		uint8_t nr_of_lines_body;
 
 
 };

@@ -89,7 +89,9 @@ void WiFi_connecter::find_sta_and_connect()
       if(connect_to >= 0)
       {
         WiFi.disconnect();
+        //delay(1000);
         WiFi.begin(WiFi.SSID(connect_to).c_str(), sig.get_main_sta_pass().c_str());
+        //WiFi.begin("Wifi_ToV","65635032");
         Serial.print("Try to connect to ");Serial.print(WiFi.SSID(connect_to).c_str());
         Serial.print(sig.get_main_sta_pass().c_str());
         uint8_t times = 0;

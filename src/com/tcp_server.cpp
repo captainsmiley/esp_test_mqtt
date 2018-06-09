@@ -15,23 +15,23 @@
 char TcpServer::serial_buff[SERIAL_BUFF_READ_SIZE];
 size_t TcpServer::serial_buff_pos = 0;
 
-void tgtest()
+void tgtest(WiFiClient & c,const char *)
 {
 
+  Serial.println("tgtest");
   udp.out("tgtest");
 }
 
-TcpServer::TcpServer(Signals & s, Command ** cs, uint16_t nr_of_commands) : server(80),
+TcpServer::TcpServer(Signals & s) : server(80),
     client_connected(false),
 	serial_dbg(true),
-    cmds(this,s),
     server_state(WAITING),
     sig(s),
-    c_a(cs),
-    nr_of_c(nr_of_commands)
+    lines({""}),
+    line("")
 {
-
-
+  test_command = Command("tgtest",tgtest);
+  commands.add(&test_command);
 }
 
 void TcpServer::setup()
@@ -61,7 +61,6 @@ void TcpServer::update()
 
 void TcpServer::debugg()
 {
-  Serial.print("id: ");Serial.print(cmds.get_id());
 }
 
 void TcpServer::stop()
@@ -139,9 +138,16 @@ const char * TcpServer::cmp_input(const char * input, const char * cmp)
 
 void TcpServer::new_handle_command(const char * input)
 {
-  if(cmp_input(input, c_a[0]->m_name.c_str()))
-  {
-    c_a[0]->run(connected_client);
+  Command * c = commands.head;
+
+  while (c != nullptr) {
+    const char * parameter;
+    if((parameter = cmp_input(input,c->m_name.c_str())))
+    {
+      c->run(connected_client,parameter);
+    }
+
+    c = c->next;
   }
 
 }
@@ -152,7 +158,7 @@ void TcpServer::handle_command(const char * input)
     new_handle_command(input);
 
        const char * parameter;
-
+/*
        if (cmp_input(input,"read_client")) {
            if (serial_dbg) Serial.println("Runs read_client()"); cmds.read_client();}
        if (cmp_input(input,"servo_h")) {
@@ -284,6 +290,7 @@ void TcpServer::handle_command(const char * input)
          if (serial_dbg) Serial.println("Runs run_servo_test()");
          cmds.run_servo_test();
        }
+       */
 
 }
 
@@ -300,13 +307,42 @@ void TcpServer::handle_get(String & cm)
 {
     handle_command(cm.substring(1).c_str());
 }
-
-void TcpServer::handle_http_request(String & rq)
+int find_text(String needle, String haystack) {
+  int foundpos = -1;
+  for (int i = 0; i <= haystack.length() - needle.length(); i++) {
+    if (haystack.substring(i,needle.length()+i) == needle) {
+      foundpos = i;
+    }
+  }
+  return foundpos;
+}
+void TcpServer::handle_post()
 {
-    if (rq.substring(0,3) == "GET")
+  udp.out("handle post \n");
+  for(int i=0;i<nr_of_lines;i++)
+  {
+    yield();
+    udp.out(lines[i]+ "\n");
+    Serial.println(lines[i]);
+    if(lines[i].substring(0,16) == "Content-Length: ")
     {
-        String cm = rq.substring(4,rq.indexOf(' ',4));
+      String tmp = lines[i].substring(16);
+      udp.out(" Find content length:");
+      udp.out(tmp);
+    }
+  }
+    udp.out(body);
+
+}
+
+void TcpServer::handle_http_request()
+{
+    if (lines[0].substring(0,3) == "GET")
+    {
+        String cm = lines[0].substring(4,lines[0].indexOf(' ',4));
         handle_get(cm);
+    }else if (lines[0].substring(0,4)=="POST") {
+      handle_post();
     }
     else
     {
@@ -314,54 +350,70 @@ void TcpServer::handle_http_request(String & rq)
     }
 }
 
+void TcpServer::ParsBody()
+{
+  body = "";
+  while(connected_client.available() &&
+        body.length()<100)
+  {
+    char c =connected_client.read();
+    body+= c;
+  }
+
+}
+
 
 void TcpServer::read_client(WiFiClient & client)
 {
-    boolean currentLineIsBlank = true;
-    //std::vector<String> lines = {};
-    String lines[10] ={};
-    String line = {};
-    uint8_t curr_line = 0;
-    response_content = "";
-    uint8_t n_lines =0;
-    while (client.connected()) {
-      yield();
-      if (TimeSinceClientConnect() > 10000)
-      {
-        Serial.println("Err timeout connection");
+  boolean currentLineIsBlank = true;
+  //std::vector<String> lines = {};
+  uint8_t curr_line = 0;
+  response_content = "";
+  nr_of_lines = 0;
+  while (client.connected()) {
+    yield();
+    if (TimeSinceClientConnect() > 10000)
+    {
+      Serial.println("Err timeout connection");
+      udp.out("Err timeout connection\n");
+      return;
+    }
+    if (client.available()) {
+      char c = client.read();
+      // if you've gotten to the end of the line (received a newline
+      // character) and the line is blank, the http request has ended,
+      // so you can send a reply
+      if (c == '\n' && currentLineIsBlank) {
+        //body = client.readString();
+        ParsBody();
+        handle_http_request();
+        client.flush();
+        send_response();
+        nr_of_lines=0;
         return;
       }
-        if (client.available()) {
-            char c = client.read();
-            // if you've gotten to the end of the line (received a newline
-            // character) and the line is blank, the http request has ended,
-            // so you can send a reply
-            if (c == '\n' && currentLineIsBlank) {
-                handle_http_request(lines[0]);
-                client.flush();
-                send_response();
-                break;
-            }
-            if (c == '\n') {
-                // you're starting a new line
-                if (++n_lines>9)
-                {
-                  output("Err bad rq: too many lines\n");
-                  //client.flush();
-                  //send_response();
-                  return;
-                }
-                lines[curr_line++] = line;
-                line = "";
-                currentLineIsBlank = true;
-            }
-            else if (c != '\r') {
-                // you've gotten a character on the current line
-                currentLineIsBlank = false;
-                line += c;
-            }
+      if (c == '\n') {
+        // you're starting a new line
+        if (++nr_of_lines>19)
+        {
+          output("Err bad rq: too many lines\n");
+          udp.out("Err bad rq: too many lines\n");
+          //client.flush();
+          //send_response();
+          return;
         }
+        //udp.out(lines[curr_line]+"\n");
+        lines[curr_line++] = line;
+        line = "";
+        currentLineIsBlank = true;
+      }
+      else if (c != '\r') {
+        // you've gotten a character on the current line
+        currentLineIsBlank = false;
+        line += c;
+      }
     }
+  }
 }
 
 unsigned long int TcpServer::TimeSinceClientConnect()

@@ -4,10 +4,11 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include "sysm/signals.h"
-//#include "com/command.h"
+#include "com/command.h"
+#include "com/commands.h"
 #define UDP_DEBUG_UPDATE_RATE_MS 50
 
-#define UDP_BUFF_READ_SIZE 100
+#define UDP_BUFF_READ_SIZE 1000
 
 class UdpDebug
 {
@@ -22,6 +23,7 @@ public:
   bool out(String & s);
   bool out(const char* s);
   void set_client_ip(const char *p);
+  void set_client_ip(IPAddress ip);
 
 
 private:
